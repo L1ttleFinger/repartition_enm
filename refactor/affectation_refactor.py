@@ -2,7 +2,6 @@ import pandas as pd
 import json
 import numpy as np
 import random
-import png
 import matplotlib.pyplot as plt
 import time
 import os
