@@ -1,0 +1,15 @@
+Mode d'emploi :
+Modifier les nombres ci-dessous puis enregistrer ce fichier avant de lancer le programme 
+-----
+Nombre de voeux minimum par auditeur (les voeux suivants n'auront qu'une valeur indicative);6
+-----
+Les paramètres suivants ne s'appliquent qu'aux voeux principaux (valeur ci-dessus)
+Ex. : avec les valeurs par défaut, chaque auditeur :
+- Doit faire au minimum *six* voeux,
+- Ne peut mettre que *deux* villes noires au maximum dans ces six voeux,
+- Ne peut mettre que *quatre* villes rouges ou noires au maximum dans ces six voeux, en tout (par exemple, 2N+2R, ou 1N+3R, ou 0N+4R)
+- Doit mettre au minimum *zéro* villes vertes dans ces six voeux
+-----
+Nombre maximum de villes noires (les plus demandées);2
+Nombre maximum de villes noires ou rouges;4
+Nombre minimum de villes vertes (les moins demandées);0
