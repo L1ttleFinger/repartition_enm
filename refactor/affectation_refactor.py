@@ -1,11 +1,7 @@
 import pandas as pd
 import json
 import numpy as np
-import random
-import matplotlib.pyplot as plt
-import time
 import os
-from datetime import timedelta, datetime
 from scipy import optimize
 from utils import *
 from villes import Ville
