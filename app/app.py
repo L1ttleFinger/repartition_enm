@@ -1,3 +1,11 @@
+'''
+Ce fichier implémente la webapp en utilisant la librairie streamlit (https://docs.streamlit.io/develop/api-reference)
+
+Auteur: Vincent O'Luasa
+Contact: vincent.oluasa@gmail.com
+Date d'écriture: Juillet 2024
+'''
+
 import streamlit as st
 import json
 import os
@@ -64,7 +72,7 @@ with st.sidebar:
                             )
 
     
-# Répartition
+# Section dédiée à la répartition
 if not uploaded:
     st.subheader('Veuillez uploader les fichiers demandés pour démarrer la répartition.')
 else:
@@ -111,7 +119,7 @@ else:
         st.pyplot(top_30_demandes)
         st.pyplot(top_30_voeux1)
 
-    # Répartition
+    # Répartition des auditeurs
     for methode in params_dict['Methodes']:
         st.divider()
         st.subheader(f"Répartition pour la méthode {methode}:")

@@ -1,11 +1,22 @@
+'''
+Ce fichier implémente toutes les fonctions nécessaires à la vérification et l'analyse des voeux ainsi qu'à la répartition des auditeurs.
+
+Auteur: Vincent O'Luasa
+Contact: vincent.oluasa@gmail.com
+Date d'écriture: Juillet 2024
+
+Ces fonctions sont basées sur le travail de Paul Simon, AdJ. 2019
+Contact: paul.dc.simon@gmail.com
+'''
+
 import numpy as np
 import streamlit as st
 from collections import Counter
 
 ########################################################################################################################
+# Fonctions pour la vérification des voeux
 ########################################################################################################################
 
-# Fonctions pour la vérification des voeux
 def verifier_existance_voeux(l, villes):
     succes = True
     inconnues = []
@@ -94,10 +105,11 @@ def verification_voeux(voeux_df, postes_df, params_dict):
             if len(voeux_aud) > voeux_max:
                 trop_de_voeux += 1
     return erreurs, valides, trop_de_voeux
+
 ########################################################################################################################
+# Fonction qui analyse la distribution des voeux
 ########################################################################################################################
 
-# Fonction qui analyse la distribution des voeux
 def distribution_des_voeux(villes, voeux_df, postes_df, voeux_max):
     print("\nEtude de la distribution des voeux:")
     for i in range(1, voeux_max+2):
@@ -122,10 +134,11 @@ def distribution_des_voeux(villes, voeux_df, postes_df, voeux_max):
         f"Il y a {nb_postes_non_demandes} postes qui n'ont été demandés par personne."
     )
     return postes_df, nb_postes_non_demandes
+
 ########################################################################################################################
+# Fonctions de création de la matrice des couts et de récupération du numéro d'un voeu en fonction de la ville assignée
 ########################################################################################################################
 
-# Fonctions de création de la matrice des couts et de récupération du numéro d'un voeu en fonction de la ville assignée
 def voeu_vers_cout(num_voeu, methode):
     if methode == 'linéaire':
         return num_voeu

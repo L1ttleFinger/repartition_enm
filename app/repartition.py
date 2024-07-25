@@ -1,3 +1,16 @@
+'''
+Ce fichier implémente 2 fonctions:
+    - verification_et_analyse_des_voeux: En charge de la vérification et d'analyse des voeux,
+    - executer_la_repartition: En charge de la répartition des auditeurs.
+
+Auteur: Vincent O'Luasa
+Contact: vincent.oluasa@gmail.com
+Date d'écriture: Juillet 2024
+
+Ces fonctions sont basées sur le travail de Paul Simon, AdJ. 2019
+Contact: paul.dc.simon@gmail.com
+'''
+
 import numpy as np
 import os
 import streamlit as st
@@ -8,8 +21,28 @@ from villes import Ville
 
 seed = 42
 RESULTS_PATH = "./resultats/"
+if not os.path.exists(RESULTS_PATH):
+    os.makedirs(RESULTS_PATH)
 
 def verification_et_analyse_des_voeux(postes_df, voeux_df, params_dict, cas_part_df = None):
+    """Fonction qui réalise la vérification des voeux et l'analyse des résultats.
+
+    Args:
+        postes_df (pd.DataFrame): Table contenant les TJs, le nombre de postes disponibles dans ceux-ci et leur couleur,
+        voeux_df (pd.DataFrame): Table contenant les voeux des auditeurs,
+        params_dict (Dictionnary): Dictionnaire contenant les paramètres de la répartition,
+        cas_part_df (pd.DataFrame): Table des cas particuliers.
+    
+    Returns:
+        villes (Dictionnary): dicitonnaire contenant les TJs, 
+        postes_df (pd.DataFrame): Table des TJs à laquelle ont été ajoutées le nombre de demandes de chaque TJ par les auditeurs, 
+        voeux_df (pd.DataFrame): Tables des voeux mise à jour après vérification,
+        nb_postes (int): Nombre total de postes disponibles, 
+        nb_auditeurs (int): Nombre d'auditeurs à répartir, 
+        top_30_demandes (plt.figure): Graphique du top 30 des TJs les plus demandés, 
+        top_30_voeux1 (plt.figure): Graphique du top 30 des TJs les plus demandés en 1er voeu, 
+        taux_assignation (plt.figure): Graphique des taux d'affectation maximaux en fonction du nombre de voeux pris en compte. 
+    """
     voeux_max = params_dict["Voeux max"]
     nb_postes = postes_df["Postes"].sum()
 
@@ -96,6 +129,24 @@ def verification_et_analyse_des_voeux(postes_df, voeux_df, params_dict, cas_part
 
 
 def executer_la_repartition(villes, original_voeux_df, nb_auditeurs, nb_postes, params_dict, methode, file_name=None):
+    """Fonciton qui réalise la répartition des auditeurs.
+
+    Args:
+        villes (Dictionnary): dictionnaire contenant les TJs, 
+        original_voeux_df (pd.DataFrame): Table des voeux, 
+        nb_auditeurs (int): Nombre d'auditeurs à répartir, 
+        nb_postes (int): Nombre total de postes disponibles, 
+        params_dict (Dictionnary): Dictionnaire contenant les paramètres de la répartition, 
+        methode (str): Méthode utilisée pour le calcul des coûts, 
+        file_name (str): Nom du fichier des voeux.
+    
+    Returns:
+        voeux_df (pd.DataFrame): Table des voeux mise à jour avec les résultats d'affectation,
+        proportions_voeux (plt.figure): Graphique de la répartition des affectations (% de la promo affecté au nième voeu), 
+        proportion_top_3 (float): Pourcentage de la promo affecté à l'un de ses 3 premiers voeux, 
+        proportion_top_4 (float): Pourcentage de la promo affecté à l'un de ses 4 premiers voeux,, 
+        moyenne_globale (float): Numero du voeu auquel sont affectés les auditeurs en moyenne.
+    """
     voeux_df = original_voeux_df.copy()
     indice_vers_ville = []
     i = 0
