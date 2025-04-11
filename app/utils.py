@@ -127,7 +127,7 @@ def verification_voeux(voeux_df: pd.DataFrame,
         voeux_df (pd.DataFrame): DataFrame contenant les voeux des auditeurs
         postes_df (pd.DataFrame): DataFrame contenant les informations des TJs
         params_dict (Dict[str, Any]): Dictionnaire contenant les paramètres de configuration :
-            - Voeux max : Nombre maximum de voeux par auditeur
+            - Voeux : Nombre de voeux par auditeur
             - Noires max : Nombre maximum de villes noires
             - Noires ou rouges max : Nombre maximum de villes rouges ou noires
             - Vertes min : Nombre minimum de villes vertes
@@ -138,7 +138,7 @@ def verification_voeux(voeux_df: pd.DataFrame,
             - valides (int): Nombre de voeux valides
             - trop_de_voeux (int): Nombre d'auditeurs avec plus de voeux que le maximum autorisé
     """
-    voeux_max = params_dict["Voeux max"]
+    voeux = params_dict["Voeux"]
     noires_max = params_dict["Noires max"]
     rouges_noires_max = params_dict["Noires ou rouges max"]
     vertes_min = params_dict["Vertes min"]
@@ -161,11 +161,11 @@ def verification_voeux(voeux_df: pd.DataFrame,
             voeux_aud = row[1:].dropna().values
 
             succes, inconnues = verifier_existance_voeux(voeux_aud, villes)
-            n_noir = compte_noir(voeux_aud[:voeux_max], villes_noires)
-            n_rouge = compte_rouge(voeux_aud[:voeux_max], villes_rouges)
-            n_vert = compte_vert(voeux_aud[:voeux_max], villes_vertes)
+            n_noir = compte_noir(voeux_aud[:voeux], villes_noires)
+            n_rouge = compte_rouge(voeux_aud[:voeux], villes_rouges)
+            n_vert = compte_vert(voeux_aud[:voeux], villes_vertes)
 
-            if len(voeux_aud) < voeux_max:
+            if len(voeux_aud) < voeux:
                 f.write(f"Auditeur {aud}:\tERREUR ! Pas assez de voeux.\n")
                 voeux_df.iloc[index, 1:] = np.nan
                 erreurs += 1
@@ -189,7 +189,7 @@ def verification_voeux(voeux_df: pd.DataFrame,
                 erreurs += 1
             else:
                 valides += 1
-                if len(voeux_aud) > voeux_max:
+                if len(voeux_aud) > voeux:
                     trop_de_voeux += 1
     return erreurs, valides, trop_de_voeux
 
@@ -200,7 +200,7 @@ def verification_voeux(voeux_df: pd.DataFrame,
 def distribution_des_voeux(villes: Dict[str, Ville], 
                           voeux_df: pd.DataFrame, 
                           postes_df: pd.DataFrame, 
-                          voeux_max: int) -> Tuple[pd.DataFrame, int]:
+                          voeux: int) -> Tuple[pd.DataFrame, int]:
     """Analyse la distribution des voeux entre les villes et les postes.
 
     Cette fonction :
@@ -212,7 +212,7 @@ def distribution_des_voeux(villes: Dict[str, Ville],
         villes (Dict[str, Ville]): Dictionnaire d'objets Ville représentant chaque TJ
         voeux_df (pd.DataFrame): DataFrame contenant les voeux des auditeurs
         postes_df (pd.DataFrame): DataFrame contenant les informations des TJs
-        voeux_max (int): Nombre maximum de voeux par auditeur
+        voeux (int): Nombre de voeux par auditeur
 
     Returns:
         Tuple contenant :
@@ -220,18 +220,18 @@ def distribution_des_voeux(villes: Dict[str, Ville],
             - nb_postes_non_demandes (int): Nombre de postes qui n'ont pas été demandés
     """
     print("\nEtude de la distribution des voeux:")
-    for i in range(1, voeux_max+2):
+    for i in range(1, voeux+2):
         postes_df[f"nombre_voeux_{i}"] = np.nan
     nb_postes_non_demandes = 0
     
     for i in range(1, voeux_df.shape[1]+1):
         voeux_i = dict(Counter(voeux_df[f'v_{i}'].dropna().values))
         for ville in voeux_i:
-            if i-1 < voeux_max:
+            if i-1 < voeux:
                 postes_df.loc[postes_df['Ville'] == ville, f"nombre_voeux_{i}"] = voeux_i[ville]
             else:
-                postes_df.loc[postes_df['Ville'] == ville, f"nombre_voeux_{voeux_max+1}"] = voeux_i[ville]
-    postes_df['total_demandes'] = postes_df[[f"nombre_voeux_{i}" for i in range(1, voeux_max+2)]].sum(axis=1)
+                postes_df.loc[postes_df['Ville'] == ville, f"nombre_voeux_{voeux+1}"] = voeux_i[ville]
+    postes_df['total_demandes'] = postes_df[[f"nombre_voeux_{i}" for i in range(1, voeux+2)]].sum(axis=1)
     
     for ville in postes_df[postes_df['total_demandes'] == 0]['Ville']:
         capacite = villes[ville].capacite

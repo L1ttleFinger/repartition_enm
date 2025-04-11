@@ -21,7 +21,7 @@ st.title("Stage Juridictionnel")
 with open(os.path.join(FILES_PATH, "parametres.json"), "r") as f:
     params_dict = json.load(f)
 # Extraction des paramètres
-voeux_max = params_dict['Voeux max']  # Nombre maximum de voeux par auditeur
+num_voeux = params_dict['Voeux']  # Nombre maximum de voeux par auditeur
 noires_max = params_dict['Noires max']  # Nombre maximum de villes noires
 noires_ou_rouges_max = params_dict['Noires ou rouges max']  # Nombre maximum de villes rouges ou noires
 vertes_min = params_dict['Vertes min']  # Nombre minimum de villes vertes
@@ -43,8 +43,10 @@ uploaded = postes_file and voeux_file
 # Barre latérale pour la configuration des paramètres
 with st.sidebar:
     st.header("Paramètres de la répartition")
+    # Widget indicant si les voeux sont faits sans contraintes de couleurs ou non
+    voeux_libres = st.toggle('Voeux libres', value=False)
     # Widgets interactifs pour l'ajustement des paramètres
-    params_dict['Voeux max'] = st.number_input('Nombre de voeux maximum', min_value=1, value=voeux_max)
+    params_dict['Voeux'] = st.number_input('Nombre de voeux', min_value=1, value=num_voeux)
     params_dict['Noires max'] = st.number_input('Nombre de villes noires maximum', min_value=0, value=noires_max)
     params_dict['Noires ou rouges max'] = st.number_input('Nombre de villes rouges ou noires maximum', min_value=params_dict['Noires max'], value=max(params_dict['Noires max'], noires_ou_rouges_max))
     params_dict['Vertes min'] = st.number_input('Nombre de villes vertes minimum', min_value=0, value=vertes_min)
@@ -65,6 +67,13 @@ else:
     # Chargement et affichage des données téléchargées
     postes_df = pd.read_csv(postes_file)
     voeux_df = pd.read_csv(voeux_file)
+
+    if voeux_libres:
+        nb_voeux = len([col for col in voeux_df.columns if col.startswith('v_')])
+        params_dict['Voeux'] = nb_voeux
+        params_dict['Noires max'] = nb_voeux
+        params_dict['Noires ou rouges max'] = nb_voeux
+        params_dict['Vertes min'] = 0
     
     # Affichage des données dans des onglets
     postes_tab, voeux_tab = st.tabs(["Postes", "Voeux"])

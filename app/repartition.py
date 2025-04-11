@@ -65,7 +65,7 @@ def verification_et_analyse_des_voeux(postes_df: pd.DataFrame,
             - top_30_voeux1 (plt.Figure) : Graphique montrant les 30 villes les plus demandées en premier voeu
             - taux_assignation (plt.Figure) : Graphique montrant l'analyse des taux d'affectation
     """
-    voeux_max = params_dict["Voeux max"]
+    voeux = params_dict["Voeux"]
     nb_postes = postes_df["Postes"].sum()
 
     villes = {}  # Dictionnaire de Villes qui contient toutes les villes
@@ -93,7 +93,7 @@ def verification_et_analyse_des_voeux(postes_df: pd.DataFrame,
     )
     if trop_de_voeux > 0:
         st.write(
-            f"{trop_de_voeux} auditeurs sur {valides} ont formulé plus de {voeux_max} voeux"
+            f"{trop_de_voeux} auditeurs sur {valides} ont formulé plus de {voeux} voeux"
         )
     st.divider()
 
@@ -108,7 +108,7 @@ def verification_et_analyse_des_voeux(postes_df: pd.DataFrame,
     voeux_df.set_index('id_auditeur', inplace=True)
 
     # Calcul du nombre de villes n'ayant été demandées par personne :
-    postes_df, nb_postes_non_demandes = distribution_des_voeux(villes, voeux_df, postes_df, voeux_max)
+    postes_df, nb_postes_non_demandes = distribution_des_voeux(villes, voeux_df, postes_df, voeux)
     postes_df.to_csv(os.path.join(RESULTS_PATH, 'distribution_voeux.csv'), index=False)
 
     if (nb_postes_non_demandes > marge) or (erreurs > 0):
@@ -127,7 +127,7 @@ def verification_et_analyse_des_voeux(postes_df: pd.DataFrame,
 
     # Taux d'assignation
     assignment_rates = {}
-    for nb_voeux in range(1,voeux_max+1):
+    for nb_voeux in range(1,voeux+1):
         cols = [f'nombre_voeux_{i}' for i in range(1, nb_voeux+1)]
         rate = min(100 * postes_df.dropna(how='all', subset=cols)['Postes'].sum() / nb_auditeurs, 100)
         assignment_rates[nb_voeux] = rate
