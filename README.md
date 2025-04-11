@@ -86,7 +86,7 @@ streamlit run app/app.py
 - Visualisation des résultats
 
 ## Format des Fichiers d'Entrée
-Il est impératif de respecter le nom des colonnes des fichiers.
+⚠️ **Important** : Il est impératif de respecter le nom des colonnes des fichiers.
 
 ### Fichier des Postes (CSV)
 La colonne "Postes" indique le nombre de postes disponibles dans le TJ associé
