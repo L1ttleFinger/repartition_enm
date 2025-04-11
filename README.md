@@ -87,6 +87,7 @@ streamlit run app/app.py
 
 ## Format des Fichiers d'Entrée
 ⚠️ **Important** : Il est impératif de respecter le nom des colonnes des fichiers.
+⚠️ **Important** : Le nom des villes doit avoir la même orthographe dans les 2 fichiers.
 
 ### Fichier des Postes (CSV)
 La colonne "Postes" indique le nombre de postes disponibles dans le TJ associé
