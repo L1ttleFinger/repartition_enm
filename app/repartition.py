@@ -30,45 +30,45 @@ if not os.path.exists(RESULTS_PATH):
 def verification_et_analyse_des_voeux(postes_df: pd.DataFrame, 
                                       voeux_df: pd.DataFrame, 
                                       params_dict: Dict[str, Any]) -> Tuple[Dict[str, Ville], pd.DataFrame, pd.DataFrame, int, int, plt.Figure, plt.Figure, plt.Figure]:
-    """Analyze and verify the wishes of auditors and prepare data for distribution.
+    """Analyse et vérifie les voeux des auditeurs et prépare les données pour la répartition.
 
-    This function performs several key tasks:
-    1. Verifies the validity of wishes against constraints
-    2. Analyzes the distribution of wishes
-    3. Generates visualizations of the data
-    4. Prepares data for the distribution process
+    Cette fonction effectue plusieurs tâches principales :
+    1. Vérifie la validité des voeux par rapport aux contraintes
+    2. Analyse la distribution des voeux
+    3. Génère des visualisations des données
+    4. Prépare les données pour le processus de répartition
 
     Args:
-        postes_df (pd.DataFrame): DataFrame containing TJs (Tribunaux Judiciaires) information including:
-            - Ville: City name
-            - Postes: Number of available positions
-            - Couleur: Color classification of the city
-        voeux_df (pd.DataFrame): DataFrame containing auditors' wishes with columns:
-            - id_auditeur: Auditor ID
-            - v_1, v_2, etc.: Wish columns for each position
-        params_dict (Dict[str, Any]): Dictionary containing configuration parameters:
-            - Voeux max: Maximum number of wishes per auditor
-            - Noires max: Maximum number of black cities
-            - Noires ou rouges max: Maximum number of black or red cities
-            - Vertes min: Minimum number of green cities
-            - Methodes: List of cost calculation methods
-            - Penalite: Default penalty for post assignments
+        postes_df (pd.DataFrame): DataFrame contenant les informations des TJs (Tribunaux Judiciaires) incluant :
+            - Ville : Nom de la ville
+            - Postes : Nombre de postes disponibles
+            - Couleur : Classification par couleur de la ville
+        voeux_df (pd.DataFrame): DataFrame contenant les voeux des auditeurs avec les colonnes :
+            - id_auditeur : Identifiant de l'auditeur
+            - v_1, v_2, etc. : Colonnes contenant les voeux
+        params_dict (Dict[str, Any]): Dictionnaire contenant les paramètres de configuration :
+            - Voeux max : Nombre maximum de voeux par auditeur
+            - Noires max : Nombre maximum de villes noires
+            - Noires ou rouges max : Nombre maximum de villes rouges ou noires
+            - Vertes min : Nombre minimum de villes vertes
+            - Methodes : Liste des méthodes de calcul des coûts
+            - Penalite : Pénalité par défaut pour les affectations
 
     Returns:
-        Tuple containing:
-            - villes (Dict[str, Ville]): Dictionary of Ville objects representing each TJ
-            - postes_df (pd.DataFrame): Updated postes DataFrame with wish distribution analysis
-            - voeux_df (pd.DataFrame): Updated voeux DataFrame after verification
-            - nb_postes (int): Total number of available positions
-            - nb_auditeurs (int): Total number of auditors
-            - top_30_demandes (plt.Figure): Figure showing top 30 most requested cities
-            - top_30_voeux1 (plt.Figure): Figure showing top 30 first-choice cities
-            - taux_assignation (plt.Figure): Figure showing assignment rate analysis
+        Tuple contenant :
+            - villes (Dict[str, Ville]) : Dictionnaire d'objets Ville représentant chaque TJ
+            - postes_df (pd.DataFrame) : DataFrame des postes mise à jour avec l'analyse de la distribution des voeux
+            - voeux_df (pd.DataFrame) : DataFrame des voeux mise à jour après vérification
+            - nb_postes (int) : Nombre total de postes disponibles
+            - nb_auditeurs (int) : Nombre total d'auditeurs
+            - top_30_demandes (plt.Figure) : Graphique montrant les 30 villes les plus demandées
+            - top_30_voeux1 (plt.Figure) : Graphique montrant les 30 villes les plus demandées en premier voeu
+            - taux_assignation (plt.Figure) : Graphique montrant l'analyse des taux d'affectation
     """
     voeux_max = params_dict["Voeux max"]
     nb_postes = postes_df["Postes"].sum()
 
-    villes = {}  # dictionnaire de Villes qui contient toutes les villes
+    villes = {}  # Dictionnaire de Villes qui contient toutes les villes
     for index, row in postes_df.iterrows():
         if row["Postes"] > 0:
             villes[row["Ville"]] = Ville(index, row["Ville"], row["Postes"])
@@ -147,30 +147,30 @@ def executer_la_repartition(villes: Dict[str, Ville],
                             params_dict: Dict[str, Union[int, List[str]]], 
                             methode: str, 
                             file_name: str | None = None) -> Tuple[pd.DataFrame, plt.Figure, float, float, float]:
-    """Execute the distribution of auditors to positions using the specified method.
+    """Exécute la répartition des auditeurs sur les postes en utilisant la méthode spécifiée.
 
-    This function:
-    1. Creates a cost matrix based on wishes and constraints
-    2. Uses linear sum assignment to find optimal distribution
-    3. Generates results and visualizations
-    4. Saves results to CSV
+    Cette fonction :
+    1. Crée une matrice de coûts basée sur les voeux et les contraintes
+    2. Utilise l'algo scipy.optimize.linear_sum_assignmentpour trouver la répartition optimale
+    3. Génère les résultats et les visualisations
+    4. Sauvegarde les résultats en CSV
 
     Args:
-        villes (Dict[str, Ville]): Dictionary of Ville objects representing each TJ
-        original_voeux_df (pd.DataFrame): DataFrame containing auditors' wishes
-        nb_auditeurs (int): Total number of auditors to distribute
-        nb_postes (int): Total number of available positions
-        params_dict (Dict[str, Union[int, List[str]]]): Dictionary of configuration parameters
-        methode (str): Cost calculation method to use ('linéaire', 'carré', or 'exp')
-        file_name (str | None): Optional name of the input file for saving results
+        villes (Dict[str, Ville]) : Dictionnaire d'objets Ville représentant chaque TJ
+        original_voeux_df (pd.DataFrame) : DataFrame contenant les voeux des auditeurs
+        nb_auditeurs (int) : Nombre total d'auditeurs à répartir
+        nb_postes (int) : Nombre total de postes disponibles
+        params_dict (Dict[str, Union[int, List[str]]]) : Dictionnaire des paramètres de configuration
+        methode (str) : Méthode de calcul des coûts à utiliser ('linéaire', 'carré', ou 'exp')
+        file_name (str | None) : Nom optionnel du fichier d'entrée pour la sauvegarde des résultats
 
     Returns:
-        Tuple containing:
-            - voeux_df (pd.DataFrame): Updated DataFrame with assignment results
-            - proportions_voeux (plt.Figure): Figure showing wish fulfillment distribution
-            - proportion_top_3 (float): Percentage of auditors assigned to one of their top 3 wishes
-            - proportion_top_4 (float): Percentage of auditors assigned to one of their top 4 wishes
-            - moyenne_globale (float): Average wish number at which auditors are assigned
+        Tuple contenant :
+            - voeux_df (pd.DataFrame) : DataFrame mise à jour avec les résultats d'affectation
+            - proportions_voeux (plt.Figure) : Figure montrant la distribution des affectations
+            - proportion_top_3 (float) : Pourcentage d'auditeurs affectés à l'un de leurs 3 premiers voeux
+            - proportion_top_4 (float) : Pourcentage d'auditeurs affectés à l'un de leurs 4 premiers voeux
+            - moyenne_globale (float) : Numéro moyen du voeu auquel les auditeurs sont affectés
     """
     voeux_df = original_voeux_df.copy()
     indice_vers_ville = []

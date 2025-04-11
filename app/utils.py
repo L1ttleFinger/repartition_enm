@@ -23,16 +23,16 @@ from typing import Dict, List, Tuple, Union, Any, Optional
 
 def verifier_existance_voeux(list_voeux: List[str], 
                            villes: Dict[str, Ville]) -> Tuple[bool, List[str]]:
-    """Verify if all wishes in the list correspond to existing cities.
+    """Vérifie si tous les voeux de la liste correspondent à des villes existantes.
 
     Args:
-        list_voeux (List[str]): List of city names representing wishes
-        villes (Dict[str, Ville]): Dictionary of available cities with their Ville objects
+        list_voeux (List[str]): Liste des noms de villes représentant les voeux
+        villes (Dict[str, Ville]): Dictionnaire des villes disponibles avec leurs objets Ville
 
     Returns:
-        Tuple containing:
-            - succes (bool): True if all wishes exist, False otherwise
-            - inconnues (List[str]): List of unknown city names
+        Tuple contenant :
+            - succes (bool): True si tous les voeux existent, False sinon
+            - inconnues (List[str]): Liste des noms de villes inconnus
     """
     succes = True
     inconnues = []
@@ -44,27 +44,27 @@ def verifier_existance_voeux(list_voeux: List[str],
 
 
 def verifier_unicite_voeux(list_voeux: List[str]) -> bool:
-    """Verify that there are no duplicate wishes in the list.
+    """Vérifie qu'il n'y a pas de doublons dans la liste de voeux.
 
     Args:
-        list_voeux (List[str]): List of city names representing wishes
+        list_voeux (List[str]): Liste des noms de villes représentant les voeux
 
     Returns:
-        bool: True if all wishes are unique, False if there are duplicates
+        bool: True si tous les voeux sont uniques, False s'il y a des doublons
     """
     return len(set(list_voeux)) == len(list_voeux)
 
 
 def compte_rouge(list_voeux: List[str], 
                  villes_rouges: List[str]) -> int:
-    """Count the number of red cities in the list of wishes.
+    """Compte le nombre de villes rouges dans la liste de voeux.
 
     Args:
-        list_voeux (List[str]): List of city names representing wishes
-        villes_rouges (List[str]): List of red city names
+        list_voeux (List[str]): Liste des noms de villes représentant les voeux
+        villes_rouges (List[str]): Liste des noms de villes rouges
 
     Returns:
-        int: Number of red cities in the wishes
+        int: Nombre de villes rouges dans les voeux
     """
     n = 0
     for x in list_voeux:
@@ -75,14 +75,14 @@ def compte_rouge(list_voeux: List[str],
 
 def compte_noir(list_voeux: List[str], 
                 villes_noires: List[str]) -> int:
-    """Count the number of black cities in the list of wishes.
+    """Compte le nombre de villes noires dans la liste de voeux.
 
     Args:
-        list_voeux (List[str]): List of city names representing wishes
-        villes_noires (List[str]): List of black city names
+        list_voeux (List[str]): Liste des noms de villes représentant les voeux
+        villes_noires (List[str]): Liste des noms de villes noires
 
     Returns:
-        int: Number of black cities in the wishes
+        int: Nombre de villes noires dans les voeux
     """
     n = 0
     for x in list_voeux:
@@ -93,14 +93,14 @@ def compte_noir(list_voeux: List[str],
 
 def compte_vert(list_voeux: List[str], 
                 villes_vertes: List[str]) -> int:
-    """Count the number of green cities in the list of wishes.
+    """Compte le nombre de villes vertes dans la liste de voeux.
 
     Args:
-        list_voeux (List[str]): List of city names representing wishes
-        villes_vertes (List[str]): List of green city names
+        list_voeux (List[str]): Liste des noms de villes représentant les voeux
+        villes_vertes (List[str]): Liste des noms de villes vertes
 
     Returns:
-        int: Number of green cities in the wishes
+        int: Nombre de villes vertes dans les voeux
     """
     n = 0
     for x in list_voeux:
@@ -112,28 +112,28 @@ def compte_vert(list_voeux: List[str],
 def verification_voeux(voeux_df: pd.DataFrame, 
                       postes_df: pd.DataFrame, 
                       params_dict: Dict[str, Any]) -> Tuple[int, int, int]:
-    """Verify all wishes against the specified constraints and rules.
+    """Vérifie tous les voeux par rapport aux contraintes et règles spécifiées.
 
-    This function checks:
-    1. Number of wishes per auditor
-    2. Existence of wished cities
-    3. Uniqueness of wishes
-    4. Color distribution rules
+    Cette fonction vérifie :
+    1. Le nombre de voeux par auditeur
+    2. L'existence des villes souhaitées
+    3. L'unicité des voeux
+    4. Les règles de distribution des couleurs
 
     Args:
-        voeux_df (pd.DataFrame): DataFrame containing auditors' wishes
-        postes_df (pd.DataFrame): DataFrame containing TJs information
-        params_dict (Dict[str, Any]): Dictionary containing configuration parameters:
-            - Voeux max: Maximum number of wishes per auditor
-            - Noires max: Maximum number of black cities
-            - Noires ou rouges max: Maximum number of black or red cities
-            - Vertes min: Minimum number of green cities
+        voeux_df (pd.DataFrame): DataFrame contenant les voeux des auditeurs
+        postes_df (pd.DataFrame): DataFrame contenant les informations des TJs
+        params_dict (Dict[str, Any]): Dictionnaire contenant les paramètres de configuration :
+            - Voeux max : Nombre maximum de voeux par auditeur
+            - Noires max : Nombre maximum de villes noires
+            - Noires ou rouges max : Nombre maximum de villes rouges ou noires
+            - Vertes min : Nombre minimum de villes vertes
 
     Returns:
-        Tuple containing:
-            - erreurs (int): Number of invalid wishes
-            - valides (int): Number of valid wishes
-            - trop_de_voeux (int): Number of auditors with too many wishes
+        Tuple contenant :
+            - erreurs (int): Nombre de voeux invalides
+            - valides (int): Nombre de voeux valides
+            - trop_de_voeux (int): Nombre d'auditeurs avec trop de voeux
     """
     voeux_max = params_dict["Voeux max"]
     noires_max = params_dict["Noires max"]
@@ -193,23 +193,23 @@ def distribution_des_voeux(villes: Dict[str, Ville],
                           voeux_df: pd.DataFrame, 
                           postes_df: pd.DataFrame, 
                           voeux_max: int) -> Tuple[pd.DataFrame, int]:
-    """Analyze the distribution of wishes across cities and positions.
+    """Analyse la distribution des voeux entre les villes et les postes.
 
-    This function:
-    1. Counts wishes for each city and position
-    2. Identifies undemanded positions
-    3. Updates the postes DataFrame with wish distribution data
+    Cette fonction :
+    1. Calcule la distribution des voeux par TJ
+    2. Identifie les postes non demandés
+    3. Met à jour le DataFrame des postes avec les données de distribution des voeux
 
     Args:
-        villes (Dict[str, Ville]): Dictionary of Ville objects representing each TJ
-        voeux_df (pd.DataFrame): DataFrame containing auditors' wishes
-        postes_df (pd.DataFrame): DataFrame containing TJs information
-        voeux_max (int): Maximum number of wishes per auditor
+        villes (Dict[str, Ville]): Dictionnaire d'objets Ville représentant chaque TJ
+        voeux_df (pd.DataFrame): DataFrame contenant les voeux des auditeurs
+        postes_df (pd.DataFrame): DataFrame contenant les informations des TJs
+        voeux_max (int): Nombre maximum de voeux par auditeur
 
     Returns:
-        Tuple containing:
-            - postes_df (pd.DataFrame): Updated DataFrame with wish distribution analysis
-            - nb_postes_non_demandes (int): Number of positions that were not requested
+        Tuple contenant :
+            - postes_df (pd.DataFrame): DataFrame mise à jour avec l'analyse de la distribution des voeux
+            - nb_postes_non_demandes (int): Nombre de postes qui n'ont pas été demandés
     """
     print("\nEtude de la distribution des voeux:")
     for i in range(1, voeux_max+2):
@@ -240,17 +240,17 @@ def distribution_des_voeux(villes: Dict[str, Ville],
 ########################################################################################################################
 
 def voeu_vers_cout(num_voeu: int, methode: str) -> float:
-    """Convert a wish number to a cost based on the specified method.
+    """Convertit un numéro de voeu en coût selon la méthode spécifiée.
 
     Args:
-        num_voeu (int): Position of the wish in the auditor's list (1-based)
-        methode (str): Cost calculation method ('linéaire', 'carré', or 'exp')
+        num_voeu (int): Position du voeu dans la liste de l'auditeur
+        methode (str): Méthode de calcul des coûts ('linéaire', 'carré', ou 'exp')
 
     Returns:
-        float: Calculated cost for the wish
+        float: Coût calculé pour le voeu
 
     Raises:
-        ValueError: If an unknown method is specified
+        ValueError: Si une méthode inconnue est spécifiée
     """
     if methode == 'linéaire':
         return num_voeu
@@ -268,21 +268,21 @@ def creer_matrice_couts(nb_auditeurs: int,
                        villes: Dict[str, Ville], 
                        params_dict: Dict[str, Any], 
                        methode: str) -> np.ndarray:
-    """Create a cost matrix for the assignment problem.
+    """Crée une matrice de coûts pour le problème d'affectation.
 
-    The cost matrix represents the cost of assigning each auditor to each position,
-    based on their wishes and the specified cost calculation method.
+    La matrice de coûts représente le coût d'affecter chaque auditeur à chaque poste,
+    en fonction de leurs voeux et de la méthode de calcul des coûts spécifiée.
 
     Args:
-        nb_auditeurs (int): Total number of auditors
-        nb_postes (int): Total number of available positions
-        repartition_df (pd.DataFrame): DataFrame containing auditors' wishes
-        villes (Dict[str, Ville]): Dictionary of Ville objects
-        params_dict (Dict[str, Any]): Dictionary containing configuration parameters
-        methode (str): Cost calculation method to use
+        nb_auditeurs (int): Nombre total d'auditeurs
+        nb_postes (int): Nombre total de postes disponibles
+        repartition_df (pd.DataFrame): DataFrame contenant les voeux des auditeurs
+        villes (Dict[str, Ville]): Dictionnaire d'objets Ville
+        params_dict (Dict[str, Any]): Dictionnaire contenant les paramètres de configuration
+        methode (str): Méthode de calcul des coûts à utiliser
 
     Returns:
-        np.ndarray: Cost matrix of shape (nb_auditeurs, nb_postes)
+        np.ndarray: Matrice de coûts de dimension (nb_auditeurs, nb_postes)
     """
     # voeux_max = params_dict['Voeux max']
     penalite = params_dict['Penalite']
@@ -305,14 +305,14 @@ def creer_matrice_couts(nb_auditeurs: int,
 
 
 def recuperer_num_voeu(voeux: np.ndarray, assignation: str) -> int:
-    """Find the position of an assigned city in an auditor's wish list.
+    """Trouve la position d'une ville assignée dans la liste de voeux d'un auditeur.
 
     Args:
-        voeux (np.ndarray): Array of city names representing an auditor's wishes
-        assignation (str): Assigned city name
+        voeux (np.ndarray): Tableau des noms de villes représentant les voeux d'un auditeur
+        assignation (str): Nom de la ville assignée
 
     Returns:
-        int: Position of the assigned city in the wish list (1-based), or 100 if not found
+        int: Numero du voeux correpondant à la ville assignée, 100 si hors voeux
     """
     indices = np.where(voeux == assignation)[0]
     if len(indices) == 0:

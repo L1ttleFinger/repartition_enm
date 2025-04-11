@@ -12,24 +12,24 @@ import os
 import pandas as pd
 from repartition import *
 
-# Configuration path for parameter files
+# Path du fichier configuration
 FILES_PATH = "./config/"
 
 st.title("Stage Juridictionnel")
 
-# Load and initialize parameters from JSON file
+# Chargement et initialisation des paramètres depuis le fichier JSON
 with open(os.path.join(FILES_PATH, "parametres.json"), "r") as f:
     params_dict = json.load(f)
-# Extract key parameters for easier access
-voeux_max = params_dict['Voeux max']  # Maximum number of wishes per auditor
-noires_max = params_dict['Noires max']  # Maximum number of black cities
-noires_ou_rouges_max = params_dict['Noires ou rouges max']  # Maximum number of black or red cities
-vertes_min = params_dict['Vertes min']  # Minimum number of green cities
-methode = params_dict['Methodes']  # Method for cost calculation
-penalite = params_dict['Penalite']  # Default penalty for post assignments
-methods = ['linéaire', 'carré', 'exp']  # Available cost calculation methods
+# Extraction des paramètres
+voeux_max = params_dict['Voeux max']  # Nombre maximum de voeux par auditeur
+noires_max = params_dict['Noires max']  # Nombre maximum de villes noires
+noires_ou_rouges_max = params_dict['Noires ou rouges max']  # Nombre maximum de villes rouges ou noires
+vertes_min = params_dict['Vertes min']  # Nombre minimum de villes vertes
+methode = params_dict['Methodes']  # Méthode pour le calcul des coûts
+penalite = params_dict['Penalite']  # Pénalité par défaut pour les affectations
+methods = ['linéaire', 'carré', 'exp']  # Méthodes de calcul des coûts disponibles
 
-# File upload section for post and wish data
+# Section d'upload des fichiers pour les données des postes et des voeux
 uploaded = False
 postes, voeux = st.columns(2)
 with postes:
@@ -40,10 +40,10 @@ with voeux:
     voeux_file = st.file_uploader('Uploader ici le fichier contenant les voeux des auditeurs')
 uploaded = postes_file and voeux_file
 
-# Sidebar for parameter configuration
+# Barre latérale pour la configuration des paramètres
 with st.sidebar:
     st.header("Paramètres de la répartition")
-    # Interactive widgets for parameter adjustment
+    # Widgets interactifs pour l'ajustement des paramètres
     params_dict['Voeux max'] = st.number_input('Nombre de voeux maximum', min_value=1, value=voeux_max)
     params_dict['Noires max'] = st.number_input('Nombre de villes noires maximum', min_value=0, value=noires_max)
     params_dict['Noires ou rouges max'] = st.number_input('Nombre de villes rouges ou noires maximum', min_value=params_dict['Noires max'], value=max(params_dict['Noires max'], noires_ou_rouges_max))
@@ -56,17 +56,17 @@ with st.sidebar:
                                 placeholder="Selectionner la méthode de calcul des coûts",
                             )
 
-# Main content area - only shown when files are uploaded
+# Zone de contenu principale - affichée uniquement lorsque les fichiers sont téléchargés
 if not uploaded:
     st.subheader('Veuillez uploader les fichiers demandés pour démarrer la répartition.')
 else:
     st.write('\n')
     st.header('Répartition des auditeurs')
-    # Load and display the uploaded data
+    # Chargement et affichage des données téléchargées
     postes_df = pd.read_csv(postes_file)
     voeux_df = pd.read_csv(voeux_file)
     
-    # Display data in tabs
+    # Affichage des données dans des onglets
     postes_tab, voeux_tab = st.tabs(["Postes", "Voeux"])
     with postes_tab:
         st.subheader("Postes disponibles:")
@@ -75,11 +75,11 @@ else:
         st.subheader("Voeux des auditeurs:")
         st.dataframe(voeux_df.set_index('id_auditeur'))
 
-    # Analysis section with multiple tabs
+    # Section d'analyse avec plusieurs onglets
     st.subheader('Vérification et analyse des voeux:')
     recap_tab, distribution_tab, taux_tab, graph_tab = st.tabs(["Récapitulatif de l'analyse", "Distribution des voeux", "Taux d'assignation", "Graphiques des plus fortes demandes"])
     
-    # Perform wish verification and analysis
+    # Exécution de la vérification et de l'analyse des voeux
     with recap_tab:
         villes, postes_df, voeux_df, nb_postes, nb_auditeurs, top_30_demandes, top_30_voeux1, taux_assignation = verification_et_analyse_des_voeux(postes_df, voeux_df, params_dict)
     
@@ -97,14 +97,14 @@ else:
         st.pyplot(top_30_demandes)
         st.pyplot(top_30_voeux1)
 
-    # Execute distribution for each selected method
+    # Exécution de la répartition pour chaque méthode sélectionnée
     for methode in params_dict['Methodes']:
         st.divider()
         st.subheader(f"Répartition pour la méthode {methode}:")
-        # Execute the distribution and get results
+        # Exécution de la répartition et récupération des résultats
         res_voeux_df, proportions_voeux, proportion_top_3, proportion_top_4, moyenne_globale = executer_la_repartition(villes, voeux_df, nb_auditeurs, nb_postes, params_dict, methode, file_name = voeux_file.name)
         
-        # Display results in tabs
+        # Affichage des résultats dans des onglets
         graph_repartition_tab, resultats_tab = st.tabs(["Graphiques", "Résultats"])
         with graph_repartition_tab:
             st.write("Proportion des affectations en fonction du voeu:")
