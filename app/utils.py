@@ -13,6 +13,7 @@ from __future__ import annotations
 import numpy as np
 import streamlit as st
 import pandas as pd
+import os
 from collections import Counter
 from villes import Ville
 from typing import Dict, List, Tuple, Union, Any, Optional
@@ -115,10 +116,12 @@ def verification_voeux(voeux_df: pd.DataFrame,
     """Vérifie tous les voeux par rapport aux contraintes et règles spécifiées.
 
     Cette fonction vérifie :
-    1. Le nombre de voeux par auditeur
+    1. Le nombre de voeux par auditeur (minimum et maximum)
     2. L'existence des villes souhaitées
     3. L'unicité des voeux
-    4. Les règles de distribution des couleurs
+    4. Les règles de distribution des couleurs (noires, rouges, vertes)
+    5. Écrit les erreurs dans un fichier de log 'voeux_non_valides.txt'
+    6. Modifie le DataFrame des voeux en invalidant les voeux non conformes
 
     Args:
         voeux_df (pd.DataFrame): DataFrame contenant les voeux des auditeurs
@@ -133,7 +136,7 @@ def verification_voeux(voeux_df: pd.DataFrame,
         Tuple contenant :
             - erreurs (int): Nombre de voeux invalides
             - valides (int): Nombre de voeux valides
-            - trop_de_voeux (int): Nombre d'auditeurs avec trop de voeux
+            - trop_de_voeux (int): Nombre d'auditeurs avec plus de voeux que le maximum autorisé
     """
     voeux_max = params_dict["Voeux max"]
     noires_max = params_dict["Noires max"]
@@ -148,41 +151,46 @@ def verification_voeux(voeux_df: pd.DataFrame,
     erreurs = 0
     valides = 0
     trop_de_voeux = 0
-    for index, row in voeux_df.iterrows():
-        aud = str(row["id_auditeur"])
-        voeux_aud = row[1:].dropna().values
+    
+    # Création et/ou ouverture du fichier de log des voeux non valides
+    log_file = "logs/voeux_non_valides.txt"
+    os.makedirs(os.path.dirname(log_file), exist_ok=True)
+    with open(log_file, "w") as f:
+        for index, row in voeux_df.iterrows():
+            aud = str(row["id_auditeur"])
+            voeux_aud = row[1:].dropna().values
 
-        succes, inconnues = verifier_existance_voeux(voeux_aud, villes)
-        n_noir = compte_noir(voeux_aud[:voeux_max], villes_noires)
-        n_rouge = compte_rouge(voeux_aud[:voeux_max], villes_rouges)
-        n_vert = compte_vert(voeux_aud[:voeux_max], villes_vertes)
+            succes, inconnues = verifier_existance_voeux(voeux_aud, villes)
+            n_noir = compte_noir(voeux_aud[:voeux_max], villes_noires)
+            n_rouge = compte_rouge(voeux_aud[:voeux_max], villes_rouges)
+            n_vert = compte_vert(voeux_aud[:voeux_max], villes_vertes)
 
-        if len(voeux_aud) < voeux_max:
-            print(f"Auditeur {aud}:\tERREUR ! Pas assez de voeux.")
-            voeux_df.iloc[index, 1:] = np.nan
-            erreurs += 1
-        elif not (succes):
-            print(f"Auditeur {aud}:\tERREUR ! Voeu(x) inconnu(s) :\t", inconnues)
-            voeux_df.iloc[index, 1:] = np.nan
-            erreurs += 1
-        elif not (verifier_unicite_voeux(voeux_aud)):
-            print(f"Auditeur {aud}:\tERREUR ! Doublons :\t", voeux_aud)
-            voeux_df.iloc[index, 1:] = np.nan
-            erreurs += 1
-        elif (
-            (n_noir > noires_max)
-            or (n_noir + n_rouge > rouges_noires_max)
-            or (n_vert < vertes_min)
-        ):
-            print(
-                f"Auditeur {aud}:\tERREUR ! Couleurs ({n_noir} N, {n_rouge} R, {n_vert} V)\t"
-            )
-            voeux_df.iloc[index, 1:] = np.nan
-            erreurs += 1
-        else:
-            valides += 1
-            if len(voeux_aud) > voeux_max:
-                trop_de_voeux += 1
+            if len(voeux_aud) < voeux_max:
+                f.write(f"Auditeur {aud}:\tERREUR ! Pas assez de voeux.\n")
+                voeux_df.iloc[index, 1:] = np.nan
+                erreurs += 1
+            elif not (succes):
+                f.write(f"Auditeur {aud}:\tERREUR ! Voeu(x) inconnu(s) :\t{inconnues}\n")
+                voeux_df.iloc[index, 1:] = np.nan
+                erreurs += 1
+            elif not (verifier_unicite_voeux(voeux_aud)):
+                f.write(f"Auditeur {aud}:\tERREUR ! Doublons :\t{voeux_aud}\n")
+                voeux_df.iloc[index, 1:] = np.nan
+                erreurs += 1
+            elif (
+                (n_noir > noires_max)
+                or (n_noir + n_rouge > rouges_noires_max)
+                or (n_vert < vertes_min)
+            ):
+                f.write(
+                    f"Auditeur {aud}:\tERREUR ! Couleurs ({n_noir} N, {n_rouge} R, {n_vert} V)\t\n"
+                )
+                voeux_df.iloc[index, 1:] = np.nan
+                erreurs += 1
+            else:
+                valides += 1
+                if len(voeux_aud) > voeux_max:
+                    trop_de_voeux += 1
     return erreurs, valides, trop_de_voeux
 
 ########################################################################################################################

@@ -113,7 +113,7 @@ def verification_et_analyse_des_voeux(postes_df: pd.DataFrame,
 
     if (nb_postes_non_demandes > marge) or (erreurs > 0):
         st.write(
-            f"Il y aura donc au moins {max(nb_postes_non_demandes - marge, erreurs)} auditeurs placés hors de leurs voeux :(\n(dont {erreurs} pour cause de voeux invalides)."
+            f"Il y aura donc au moins {max(nb_postes_non_demandes - marge, erreurs)} auditeurs placés hors de leurs voeux (dont {erreurs} pour cause de voeux invalides)."
         )
 
     top_30_demandes, ax1 = plt.subplots(1, 1)
