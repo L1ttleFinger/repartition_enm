@@ -86,6 +86,7 @@ streamlit run app/app.py
 - Visualisation des résultats
 
 ## Format des Fichiers d'Entrée
+Il est impératif de respecter le nom des colonnes des fichiers.
 
 ### Fichier des Postes (CSV)
 La colonne "Postes" indique le nombre de postes disponibles dans le TJ associé
@@ -97,7 +98,7 @@ Lyon,5,noir
 ```
 
 ### Fichier des Voeux (CSV)
-La colonne "id_auditeur" indique l'identifiant d'un auditeur, ce qui peut être un numéro ou un nom-prenom
+La colonne "id_auditeur" indique l'identifiant d'un auditeur, ce qui peut être un numéro ou un nom-prenom.
 ```csv
 id_auditeur,v_1,v_2,v_3,...
 1,Paris,Lyon,Marseille,...
