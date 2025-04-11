@@ -1,7 +1,7 @@
 {
-    "Voeux max": 6,
-    "Noires max": 2,
-    "Noires ou rouges max": 4,
+    "Voeux max": 8,
+    "Noires max": 3,
+    "Noires ou rouges max": 6,
     "Vertes min": 0,
     "Methodes": ["linéaire", "carré", "exp"],
     "Penalite": 1000000000
