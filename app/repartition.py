@@ -113,7 +113,7 @@ def verification_et_analyse_des_voeux(postes_df: pd.DataFrame,
 
     if (nb_postes_non_demandes > marge) or (erreurs > 0):
         st.write(
-            f"Il y aura donc forcément au moins {max(nb_postes_non_demandes - marge, erreurs)} auditeurs placés hors de leurs voeux :(\n(dont {erreurs} pour cause de voeux invalides)."
+            f"Il y aura donc au moins {max(nb_postes_non_demandes - marge, erreurs)} auditeurs placés hors de leurs voeux :(\n(dont {erreurs} pour cause de voeux invalides)."
         )
 
     top_30_demandes, ax1 = plt.subplots(1, 1)
@@ -172,34 +172,52 @@ def executer_la_repartition(villes: Dict[str, Ville],
             - proportion_top_4 (float) : Pourcentage d'auditeurs affectés à l'un de leurs 4 premiers voeux
             - moyenne_globale (float) : Numéro moyen du voeu auquel les auditeurs sont affectés
     """
+    # Création d'une copie pour éviter de modifier les données originales
     voeux_df = original_voeux_df.copy()
+    
+    # Construction d'une liste qui mappe chaque poste à sa ville
+    # Cette liste est utilisée pour convertir les indices de la matrice en noms de villes
     indice_vers_ville = []
     i = 0
     for ville in villes.values():
         for _ in range(ville.capacite):
             indice_vers_ville.append(ville.nom)
-            ville.colonnes.append(i)
+            ville.colonnes.append(i)  # Stockage des indices de colonnes pour chaque ville
             i = i + 1
 
+    # Mélange aléatoire des auditeurs pour éviter les biais dans l'affectation
     repartition_df = voeux_df.sample(frac=1, random_state=seed).reset_index()
 
+    # Création de la matrice de coûts et résolution du problème d'affectation
     matrice_couts = creer_matrice_couts(nb_auditeurs, nb_postes, repartition_df, villes, params_dict, methode)
     row_ind, col_ind = optimize.linear_sum_assignment(matrice_couts)
 
+    # Initialisation des colonnes pour stocker les résultats
     voeux_df['assignation'] = ''
     voeux_df['voeu_realise'] = np.nan
+
+    # Affectation des postes aux auditeurs en utilisant les résultats de l'algorithme
     for index in row_ind:
         id_auditeur = repartition_df.loc[index, 'id_auditeur']
         assignation = indice_vers_ville[col_ind[index]]
+        # Récupération du numéro du voeu réalisé (1er, 2ème, etc.)
         voeux_df.loc[id_auditeur, 'voeu_realise'] = recuperer_num_voeu(voeux_df.loc[id_auditeur][:-2].values, assignation)
         voeux_df.loc[id_auditeur, 'assignation'] = assignation
+
+    # Conversion des résultats en int et sauvegarde
     voeux_df['voeu_realise'] = voeux_df['voeu_realise'].astype(int)
     voeux_df.to_csv(os.path.join(RESULTS_PATH, f'resultats_{file_name[:-4]}_{methode}.csv'))
+
+    # Calcul des statistiques sur les affectations
     proportions = voeux_df['voeu_realise'].value_counts().sort_index()
 
+    # Création du graphique en camembert des affectations
     proportions_voeux = plt.figure()
     proportions.plot.pie(autopct='%1.1f%%', ylabel='', title=f"Méthode utilisée: {methode}")
-    proportion_top_3 = 100 * proportions.loc[1:3].sum() / proportions.sum()
-    proportion_top_4 = 100 * proportions.loc[1:4].sum() / proportions.sum()
-    moyenne_globale = voeux_df['voeu_realise'].mean()
+
+    # Calcul des indicateurs de performance
+    proportion_top_3 = 100 * proportions.loc[1:3].sum() / proportions.sum()  # % affectés dans leurs 3 premiers voeux
+    proportion_top_4 = 100 * proportions.loc[1:4].sum() / proportions.sum()  # % affectés dans leurs 4 premiers voeux
+    moyenne_globale = voeux_df['voeu_realise'].mean()  # Moyenne du rang des voeux réalisés
+
     return voeux_df, proportions_voeux, proportion_top_3, proportion_top_4, moyenne_globale
