@@ -13,7 +13,7 @@ import pandas as pd
 from repartition import *
 
 # Path du fichier configuration
-FILES_PATH = "./config/"
+FILES_PATH = "../config/"
 
 st.title("Stage Juridictionnel")
 
