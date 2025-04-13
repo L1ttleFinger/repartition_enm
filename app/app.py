@@ -74,7 +74,7 @@ with st.sidebar:
         disabled=voeux_libres,
     )
     params_dict["Penalite"] = st.number_input(
-        "Penalite a appliquer par défaut aux postes",
+        "Pénalité à appliquer par défaut aux postes",
         min_value=1000000,
         value=penalite,
         step=1000,
