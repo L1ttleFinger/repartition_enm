@@ -1,4 +1,4 @@
-'''
+"""
 Ce fichier implémente 2 fonctions:
     - verification_et_analyse_des_voeux: En charge de la vérification et d'analyse des voeux,
     - executer_la_repartition: En charge de la répartition des auditeurs.
@@ -9,7 +9,8 @@ Date d'écriture: Juillet 2024
 
 Ces fonctions sont basées sur le travail de Paul Simon, AdJ. 2019
 Contact: paul.dc.simon@gmail.com
-'''
+"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -27,9 +28,19 @@ RESULTS_PATH = "./resultats/"
 if not os.path.exists(RESULTS_PATH):
     os.makedirs(RESULTS_PATH)
 
-def verification_et_analyse_des_voeux(postes_df: pd.DataFrame, 
-                                      voeux_df: pd.DataFrame, 
-                                      params_dict: Dict[str, Any]) -> Tuple[Dict[str, Ville], pd.DataFrame, pd.DataFrame, int, int, plt.Figure, plt.Figure, plt.Figure]:
+
+def verification_et_analyse_des_voeux(
+    postes_df: pd.DataFrame, voeux_df: pd.DataFrame, params_dict: Dict[str, Any]
+) -> Tuple[
+    Dict[str, Ville],
+    pd.DataFrame,
+    pd.DataFrame,
+    int,
+    int,
+    plt.Figure,
+    plt.Figure,
+    plt.Figure,
+]:
     """Analyse et vérifie les voeux des auditeurs et prépare les données pour la répartition.
 
     Cette fonction effectue plusieurs tâches principales :
@@ -74,23 +85,24 @@ def verification_et_analyse_des_voeux(postes_df: pd.DataFrame,
             villes[row["Ville"]] = Ville(index, row["Ville"], row["Postes"])
         else:
             st.write("Ville ignorée (aucun poste) :", row["Ville"])
-    
+
     st.write(f"Il y a {nb_postes} postes disponibles dans {len(postes_df)} villes.")
     st.divider()
 
     # Vérification des voeux
-    st.write("Critères de validation des voeux:\n"
-             + "\n- Nombre de voeux suffisant,"
-             + "\n- Existence de chaque ville souhaitée,"
-             + "\n- Unicité des voeux,"
-             + "\n- Respect des règles de couleur."
-    )
-
-    erreurs, valides, trop_de_voeux = verification_voeux(voeux_df, postes_df, params_dict)
-
     st.write(
-        f"Voeux valides: {valides} | Voeux invalides: {erreurs}."
+        "Critères de validation des voeux:\n"
+        + "\n- Nombre de voeux suffisant,"
+        + "\n- Existence de chaque ville souhaitée,"
+        + "\n- Unicité des voeux,"
+        + "\n- Respect des règles de couleur."
     )
+
+    erreurs, valides, trop_de_voeux = verification_voeux(
+        voeux_df, postes_df, params_dict
+    )
+
+    st.write(f"Voeux valides: {valides} | Voeux invalides: {erreurs}.")
     if trop_de_voeux > 0:
         st.write(
             f"{trop_de_voeux} auditeurs sur {valides} ont formulé plus de {voeux} voeux"
@@ -99,17 +111,17 @@ def verification_et_analyse_des_voeux(postes_df: pd.DataFrame,
 
     nb_auditeurs = len(voeux_df)
 
-    st.write(
-        f"Il y a {nb_auditeurs} auditeurs à répartir sur {nb_postes} postes.\n"
-    )
+    st.write(f"Il y a {nb_auditeurs} auditeurs à répartir sur {nb_postes} postes.\n")
     marge = nb_postes - nb_auditeurs
 
     # Traitement des cas particuliers
-    voeux_df.set_index('id_auditeur', inplace=True)
+    voeux_df.set_index("id_auditeur", inplace=True)
 
     # Calcul du nombre de villes n'ayant été demandées par personne :
-    postes_df, nb_postes_non_demandes = distribution_des_voeux(villes, voeux_df, postes_df, voeux)
-    postes_df.to_csv(os.path.join(RESULTS_PATH, 'distribution_voeux.csv'), index=False)
+    postes_df, nb_postes_non_demandes = distribution_des_voeux(
+        villes, voeux_df, postes_df, voeux
+    )
+    postes_df.to_csv(os.path.join(RESULTS_PATH, "distribution_voeux.csv"), index=False)
 
     if (nb_postes_non_demandes > marge) or (erreurs > 0):
         st.write(
@@ -118,37 +130,65 @@ def verification_et_analyse_des_voeux(postes_df: pd.DataFrame,
 
     top_30_demandes, ax1 = plt.subplots(1, 1)
     top_30_voeux1, ax2 = plt.subplots(1, 1)
-    ax_demandes = postes_df.sort_values(by='total_demandes', ascending=False).set_index('Ville').head(30)[['total_demandes', 'Postes']].plot.bar(figsize=(10,5), ax=ax1, xlabel='')
+    ax_demandes = (
+        postes_df.sort_values(by="total_demandes", ascending=False)
+        .set_index("Ville")
+        .head(30)[["total_demandes", "Postes"]]
+        .plot.bar(figsize=(10, 5), ax=ax1, xlabel="")
+    )
     ax_demandes.bar_label(ax_demandes.containers[0])
-    ax_voeux = postes_df.sort_values(by='nombre_voeux_1', ascending=False).set_index('Ville').head(30)[['nombre_voeux_1', 'Postes']].plot.bar(figsize=(10,5), ax=ax2, xlabel='')
+    ax_voeux = (
+        postes_df.sort_values(by="nombre_voeux_1", ascending=False)
+        .set_index("Ville")
+        .head(30)[["nombre_voeux_1", "Postes"]]
+        .plot.bar(figsize=(10, 5), ax=ax2, xlabel="")
+    )
     ax_voeux.bar_label(ax_voeux.containers[0])
     ax1.legend(["Nombre de voeux", "Nombre de postes"])
     ax2.legend(["Nombre de 1er voeux", "Nombre de postes"])
 
     # Taux d'assignation
     assignment_rates = {}
-    for nb_voeux in range(1,voeux+1):
-        cols = [f'nombre_voeux_{i}' for i in range(1, nb_voeux+1)]
-        rate = min(100 * postes_df.dropna(how='all', subset=cols)['Postes'].sum() / nb_auditeurs, 100)
+    for nb_voeux in range(1, voeux + 1):
+        cols = [f"nombre_voeux_{i}" for i in range(1, nb_voeux + 1)]
+        rate = min(
+            100
+            * postes_df.dropna(how="all", subset=cols)["Postes"].sum()
+            / nb_auditeurs,
+            100,
+        )
         assignment_rates[nb_voeux] = rate
     taux_assignation, ax_rates = plt.subplots()
-    bar_container = ax_rates.bar(range(len(assignment_rates)), list(assignment_rates.values()), align='center')
-    ax_rates.bar_label(bar_container, fmt='{:,.1f}%')
+    bar_container = ax_rates.bar(
+        range(len(assignment_rates)), list(assignment_rates.values()), align="center"
+    )
+    ax_rates.bar_label(bar_container, fmt="{:,.1f}%")
     plt.xticks(range(len(assignment_rates)), list(assignment_rates.keys()))
-    plt.xlabel('Numéro du voeu (N)')
-    plt.ylabel('Taux d\'assignation (%)')
-    plt.ylim(60,103)
+    plt.xlabel("Numéro du voeu (N)")
+    plt.ylabel("Taux d'assignation (%)")
+    plt.ylim(60, 103)
 
-    return villes, postes_df, voeux_df, nb_postes, nb_auditeurs, top_30_demandes, top_30_voeux1, taux_assignation
+    return (
+        villes,
+        postes_df,
+        voeux_df,
+        nb_postes,
+        nb_auditeurs,
+        top_30_demandes,
+        top_30_voeux1,
+        taux_assignation,
+    )
 
 
-def executer_la_repartition(villes: Dict[str, Ville], 
-                            original_voeux_df: pd.DataFrame, 
-                            nb_auditeurs: int, 
-                            nb_postes: int, 
-                            params_dict: Dict[str, Union[int, List[str]]], 
-                            methode: str, 
-                            file_name: str | None = None) -> Tuple[pd.DataFrame, plt.Figure, float, float, float]:
+def executer_la_repartition(
+    villes: Dict[str, Ville],
+    original_voeux_df: pd.DataFrame,
+    nb_auditeurs: int,
+    nb_postes: int,
+    params_dict: Dict[str, Union[int, List[str]]],
+    methode: str,
+    file_name: str | None = None,
+) -> Tuple[pd.DataFrame, plt.Figure, float, float, float]:
     """Exécute la répartition des auditeurs sur les postes en utilisant la méthode spécifiée.
 
     Cette fonction :
@@ -176,7 +216,7 @@ def executer_la_repartition(villes: Dict[str, Ville],
     """
     # Création d'une copie pour éviter de modifier les données originales
     voeux_df = original_voeux_df.copy()
-    
+
     # Construction d'une liste qui mappe chaque poste à sa ville
     # Cette liste est utilisée pour convertir les indices de la matrice en noms de villes
     indice_vers_ville = []
@@ -184,42 +224,64 @@ def executer_la_repartition(villes: Dict[str, Ville],
     for ville in villes.values():
         for _ in range(ville.capacite):
             indice_vers_ville.append(ville.nom)
-            ville.colonnes.append(i)  # Stockage des indices de colonnes pour chaque ville
+            ville.colonnes.append(
+                i
+            )  # Stockage des indices de colonnes pour chaque ville
             i = i + 1
 
     # Mélange aléatoire des auditeurs pour éviter les biais dans l'affectation
     repartition_df = voeux_df.sample(frac=1, random_state=seed).reset_index()
 
     # Création de la matrice de coûts et résolution du problème d'affectation
-    matrice_couts = creer_matrice_couts(nb_auditeurs, nb_postes, repartition_df, villes, params_dict, methode)
+    matrice_couts = creer_matrice_couts(
+        nb_auditeurs, nb_postes, repartition_df, villes, params_dict, methode
+    )
     row_ind, col_ind = optimize.linear_sum_assignment(matrice_couts)
 
     # Initialisation des colonnes pour stocker les résultats
-    voeux_df['assignation'] = ''
-    voeux_df['voeu_realise'] = np.nan
+    voeux_df["assignation"] = ""
+    voeux_df["voeu_realise"] = np.nan
 
     # Affectation des postes aux auditeurs en utilisant les résultats de l'algorithme
     for index in row_ind:
-        id_auditeur = repartition_df.loc[index, 'id_auditeur']
+        id_auditeur = repartition_df.loc[index, "id_auditeur"]
         assignation = indice_vers_ville[col_ind[index]]
         # Récupération du numéro du voeu réalisé (1er, 2ème, etc.)
-        voeux_df.loc[id_auditeur, 'voeu_realise'] = recuperer_num_voeu(voeux_df.loc[id_auditeur][:-2].values, assignation)
-        voeux_df.loc[id_auditeur, 'assignation'] = assignation
+        voeux_df.loc[id_auditeur, "voeu_realise"] = recuperer_num_voeu(
+            voeux_df.loc[id_auditeur][:-2].values, assignation
+        )
+        voeux_df.loc[id_auditeur, "assignation"] = assignation
 
     # Conversion des résultats en int et sauvegarde
-    voeux_df['voeu_realise'] = voeux_df['voeu_realise'].astype(int)
-    voeux_df.to_csv(os.path.join(RESULTS_PATH, f'resultats_{file_name[:-4]}_{methode}.csv'))
+    voeux_df["voeu_realise"] = voeux_df["voeu_realise"].astype(int)
+    voeux_df.to_csv(
+        os.path.join(RESULTS_PATH, f"resultats_{file_name[:-4]}_{methode}.csv")
+    )
 
     # Calcul des statistiques sur les affectations
-    proportions = voeux_df['voeu_realise'].value_counts().sort_index()
+    proportions = voeux_df["voeu_realise"].value_counts().sort_index()
 
     # Création du graphique en camembert des affectations
     proportions_voeux = plt.figure()
-    proportions.plot.pie(autopct='%1.1f%%', ylabel='', title=f"Méthode utilisée: {methode}")
+    proportions.plot.pie(
+        autopct="%1.1f%%", ylabel="", title=f"Méthode utilisée: {methode}"
+    )
 
     # Calcul des indicateurs de performance
-    proportion_top_3 = 100 * proportions.loc[1:3].sum() / proportions.sum()  # % affectés dans leurs 3 premiers voeux
-    proportion_top_4 = 100 * proportions.loc[1:4].sum() / proportions.sum()  # % affectés dans leurs 4 premiers voeux
-    moyenne_globale = voeux_df['voeu_realise'].mean()  # Moyenne du rang des voeux réalisés
+    proportion_top_3 = (
+        100 * proportions.loc[1:3].sum() / proportions.sum()
+    )  # % affectés dans leurs 3 premiers voeux
+    proportion_top_4 = (
+        100 * proportions.loc[1:4].sum() / proportions.sum()
+    )  # % affectés dans leurs 4 premiers voeux
+    moyenne_globale = voeux_df[
+        "voeu_realise"
+    ].mean()  # Moyenne du rang des voeux réalisés
 
-    return voeux_df, proportions_voeux, proportion_top_3, proportion_top_4, moyenne_globale
+    return (
+        voeux_df,
+        proportions_voeux,
+        proportion_top_3,
+        proportion_top_4,
+        moyenne_globale,
+    )

@@ -1,4 +1,4 @@
-'''
+"""
 Ce fichier implémente toutes les fonctions nécessaires à la vérification et l'analyse des voeux ainsi qu'à la répartition des auditeurs.
 
 Auteur: Vincent O'Luasa
@@ -7,7 +7,8 @@ Date d'écriture: Juillet 2024
 
 Ces fonctions sont basées sur le travail de Paul Simon, AdJ. 2019
 Contact: paul.dc.simon@gmail.com
-'''
+"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -22,8 +23,10 @@ from typing import Dict, List, Tuple, Union, Any, Optional
 # Fonctions pour la vérification des voeux
 ########################################################################################################################
 
-def verifier_existance_voeux(list_voeux: List[str], 
-                           villes: Dict[str, Ville]) -> Tuple[bool, List[str]]:
+
+def verifier_existance_voeux(
+    list_voeux: List[str], villes: Dict[str, Ville]
+) -> Tuple[bool, List[str]]:
     """Vérifie si tous les voeux de la liste correspondent à des villes existantes.
 
     Args:
@@ -56,8 +59,7 @@ def verifier_unicite_voeux(list_voeux: List[str]) -> bool:
     return len(set(list_voeux)) == len(list_voeux)
 
 
-def compte_rouge(list_voeux: List[str], 
-                 villes_rouges: List[str]) -> int:
+def compte_rouge(list_voeux: List[str], villes_rouges: List[str]) -> int:
     """Compte le nombre de villes rouges dans la liste de voeux.
 
     Args:
@@ -74,8 +76,7 @@ def compte_rouge(list_voeux: List[str],
     return n
 
 
-def compte_noir(list_voeux: List[str], 
-                villes_noires: List[str]) -> int:
+def compte_noir(list_voeux: List[str], villes_noires: List[str]) -> int:
     """Compte le nombre de villes noires dans la liste de voeux.
 
     Args:
@@ -92,8 +93,7 @@ def compte_noir(list_voeux: List[str],
     return n
 
 
-def compte_vert(list_voeux: List[str], 
-                villes_vertes: List[str]) -> int:
+def compte_vert(list_voeux: List[str], villes_vertes: List[str]) -> int:
     """Compte le nombre de villes vertes dans la liste de voeux.
 
     Args:
@@ -110,9 +110,9 @@ def compte_vert(list_voeux: List[str],
     return n
 
 
-def verification_voeux(voeux_df: pd.DataFrame, 
-                      postes_df: pd.DataFrame, 
-                      params_dict: Dict[str, Any]) -> Tuple[int, int, int]:
+def verification_voeux(
+    voeux_df: pd.DataFrame, postes_df: pd.DataFrame, params_dict: Dict[str, Any]
+) -> Tuple[int, int, int]:
     """Vérifie tous les voeux par rapport aux contraintes et règles spécifiées.
 
     Cette fonction vérifie :
@@ -151,7 +151,7 @@ def verification_voeux(voeux_df: pd.DataFrame,
     erreurs = 0
     valides = 0
     trop_de_voeux = 0
-    
+
     # Création et/ou ouverture du fichier de log des voeux non valides
     log_file = "./logs/voeux_non_valides.txt"
     os.makedirs(os.path.dirname(log_file), exist_ok=True)
@@ -172,7 +172,9 @@ def verification_voeux(voeux_df: pd.DataFrame,
                 voeux_df.iloc[index, 1:] = np.nan
                 erreurs += 1
             elif not (succes):
-                f.write(f"Auditeur {aud}:\tERREUR ! Voeu(x) inconnu(s) :\t{inconnues}\n")
+                f.write(
+                    f"Auditeur {aud}:\tERREUR ! Voeu(x) inconnu(s) :\t{inconnues}\n"
+                )
                 voeux_df.iloc[index, 1:] = np.nan
                 erreurs += 1
             elif not (verifier_unicite_voeux(voeux_aud)):
@@ -195,14 +197,18 @@ def verification_voeux(voeux_df: pd.DataFrame,
                     trop_de_voeux += 1
     return erreurs, valides, trop_de_voeux
 
+
 ########################################################################################################################
 # Fonction qui analyse la distribution des voeux
 ########################################################################################################################
 
-def distribution_des_voeux(villes: Dict[str, Ville], 
-                          voeux_df: pd.DataFrame, 
-                          postes_df: pd.DataFrame, 
-                          voeux: int) -> Tuple[pd.DataFrame, int]:
+
+def distribution_des_voeux(
+    villes: Dict[str, Ville],
+    voeux_df: pd.DataFrame,
+    postes_df: pd.DataFrame,
+    voeux: int,
+) -> Tuple[pd.DataFrame, int]:
     """Analyse la distribution des voeux entre les villes et les postes.
 
     Cette fonction :
@@ -222,32 +228,40 @@ def distribution_des_voeux(villes: Dict[str, Ville],
             - nb_postes_non_demandes (int): Nombre de postes qui n'ont pas été demandés
     """
     print("\nEtude de la distribution des voeux:")
-    for i in range(1, voeux+2):
+    for i in range(1, voeux + 2):
         postes_df[f"nombre_voeux_{i}"] = np.nan
     nb_postes_non_demandes = 0
-    
-    for i in range(1, voeux_df.shape[1]+1):
-        voeux_i = dict(Counter(voeux_df[f'v_{i}'].dropna().values))
+
+    for i in range(1, voeux_df.shape[1] + 1):
+        voeux_i = dict(Counter(voeux_df[f"v_{i}"].dropna().values))
         for ville in voeux_i:
-            if i-1 < voeux:
-                postes_df.loc[postes_df['Ville'] == ville, f"nombre_voeux_{i}"] = voeux_i[ville]
+            if i - 1 < voeux:
+                postes_df.loc[postes_df["Ville"] == ville, f"nombre_voeux_{i}"] = (
+                    voeux_i[ville]
+                )
             else:
-                postes_df.loc[postes_df['Ville'] == ville, f"nombre_voeux_{voeux+1}"] = voeux_i[ville]
-    postes_df['total_demandes'] = postes_df[[f"nombre_voeux_{i}" for i in range(1, voeux+2)]].sum(axis=1)
-    
-    for ville in postes_df[postes_df['total_demandes'] == 0]['Ville']:
+                postes_df.loc[
+                    postes_df["Ville"] == ville, f"nombre_voeux_{voeux+1}"
+                ] = voeux_i[ville]
+    postes_df["total_demandes"] = postes_df[
+        [f"nombre_voeux_{i}" for i in range(1, voeux + 2)]
+    ].sum(axis=1)
+
+    for ville in postes_df[postes_df["total_demandes"] == 0]["Ville"]:
         capacite = villes[ville].capacite
         print(f"Aucun auditeur n'a placé {ville} dans ses voeux ({capacite} places)")
         nb_postes_non_demandes = nb_postes_non_demandes + capacite
-    
+
     st.write(
         f"Il y a {nb_postes_non_demandes} postes qui n'ont été demandés par personne."
     )
     return postes_df, nb_postes_non_demandes
 
+
 ########################################################################################################################
 # Fonctions de création de la matrice des couts et de récupération du numéro d'un voeu en fonction de la ville assignée
 ########################################################################################################################
+
 
 def voeu_vers_cout(num_voeu: int, methode: str) -> float:
     """Convertit un numéro de voeu en coût selon la méthode spécifiée.
@@ -262,22 +276,24 @@ def voeu_vers_cout(num_voeu: int, methode: str) -> float:
     Raises:
         ValueError: Si une méthode inconnue est spécifiée
     """
-    if methode == 'linéaire':
+    if methode == "linéaire":
         return num_voeu
-    elif methode == 'carré':
+    elif methode == "carré":
         return num_voeu * num_voeu
-    elif methode == 'exp':
+    elif methode == "exp":
         return np.exp(num_voeu)
     else:
         raise ValueError(f"Méthode inconnue: {methode}")
 
 
-def creer_matrice_couts(nb_auditeurs: int, 
-                       nb_postes: int, 
-                       repartition_df: pd.DataFrame, 
-                       villes: Dict[str, Ville], 
-                       params_dict: Dict[str, Any], 
-                       methode: str) -> np.ndarray:
+def creer_matrice_couts(
+    nb_auditeurs: int,
+    nb_postes: int,
+    repartition_df: pd.DataFrame,
+    villes: Dict[str, Ville],
+    params_dict: Dict[str, Any],
+    methode: str,
+) -> np.ndarray:
     """Crée une matrice de coûts pour le problème d'affectation.
 
     La matrice de coûts représente le coût d'affecter chaque auditeur à chaque poste,
@@ -295,7 +311,7 @@ def creer_matrice_couts(nb_auditeurs: int,
         np.ndarray: Matrice de coûts de dimension (nb_auditeurs, nb_postes)
     """
     # voeux_max = params_dict['Voeux max']
-    penalite = params_dict['Penalite']
+    penalite = params_dict["Penalite"]
     # lignes : nb_auditeurs ; colonnes : nb_postes
     matrice_couts = np.full((nb_auditeurs, nb_postes), penalite)
 
