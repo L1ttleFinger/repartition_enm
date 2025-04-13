@@ -13,12 +13,12 @@ import pandas as pd
 from repartition import *
 
 # Path du fichier configuration
-FILES_PATH = "../config/"
+CONFIG_PATH = "./config/"
 
 st.title("Stage Juridictionnel")
 
 # Chargement et initialisation des paramètres depuis le fichier JSON
-with open(os.path.join(FILES_PATH, "parametres.json"), "r") as f:
+with open(os.path.join(CONFIG_PATH, "parametres.json"), "r") as f:
     params_dict = json.load(f)
 # Extraction des paramètres
 num_voeux = params_dict['Voeux']  # Nombre maximum de voeux par auditeur
@@ -46,10 +46,10 @@ with st.sidebar:
     # Widget indicant si les voeux sont faits sans contraintes de couleurs ou non
     voeux_libres = st.toggle('Voeux libres', value=False)
     # Widgets interactifs pour l'ajustement des paramètres
-    params_dict['Voeux'] = st.number_input('Nombre de voeux', min_value=1, value=num_voeux)
-    params_dict['Noires max'] = st.number_input('Nombre de villes noires maximum', min_value=0, value=noires_max)
-    params_dict['Noires ou rouges max'] = st.number_input('Nombre de villes rouges ou noires maximum', min_value=params_dict['Noires max'], value=max(params_dict['Noires max'], noires_ou_rouges_max))
-    params_dict['Vertes min'] = st.number_input('Nombre de villes vertes minimum', min_value=0, value=vertes_min)
+    params_dict['Voeux'] = st.number_input('Nombre de voeux', min_value=1, value=num_voeux, disabled=voeux_libres)
+    params_dict['Noires max'] = st.number_input('Nombre de villes noires maximum', min_value=0, value=noires_max, disabled=voeux_libres)
+    params_dict['Noires ou rouges max'] = st.number_input('Nombre de villes rouges ou noires maximum', min_value=params_dict['Noires max'], value=max(params_dict['Noires max'], noires_ou_rouges_max), disabled=voeux_libres)
+    params_dict['Vertes min'] = st.number_input('Nombre de villes vertes minimum', min_value=0, value=vertes_min, disabled=voeux_libres)
     params_dict['Penalite'] = st.number_input('Penalite a appliquer par défaut aux postes', min_value=1000000, value=penalite, step=1000)
     params_dict['Methodes'] = st.multiselect(
                                 "Méthode de calcul des coûts",
@@ -97,8 +97,8 @@ else:
     
     with taux_tab:
         st.write("Taux d'assignation: pourcentage de la promotion pouvant être assigné à l'un de ses voeux.")
-        st.write("Le graphique ci-dessous présente les taux d'assignation maximaux que l'on peut espérer obtenir en ne prenant en compte que les n premiers voeux.")
-        st.write("Pour avoir le taux d'assignation réel il faut lancer la répartition sur les n premiers voeux.")
+        st.write("Le graphique ci-dessous présente les taux d'assignation maximaux que l'on peut espérer obtenir en ne prenant en compte que les N premiers voeux. Un taux d'assignation a 100% ne signifie pas que tout le monde sera affecté à l'un de ses voeux, mais que c'est une possibilité. En revanche, un taux d'assignation a 80% signifie que maximum 80% des auditeurs seront affectés à l'un de leurs N premiers voeux, et donc qu'au moins 20% des auditeurs seront affectés à un TJ en dehors de leurs N premiers choix.")
+        st.write("Pour avoir le taux d'assignation réel il faut lancer la répartition sur les N premiers voeux.")
         st.pyplot(taux_assignation)
     
     with graph_tab:
