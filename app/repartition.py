@@ -133,8 +133,10 @@ def verification_et_analyse_des_voeux(postes_df: pd.DataFrame,
         assignment_rates[nb_voeux] = rate
     taux_assignation, ax_rates = plt.subplots()
     bar_container = ax_rates.bar(range(len(assignment_rates)), list(assignment_rates.values()), align='center')
-    ax_rates.bar_label(bar_container, fmt='{:,.1f}')
+    ax_rates.bar_label(bar_container, fmt='{:,.1f}%')
     plt.xticks(range(len(assignment_rates)), list(assignment_rates.keys()))
+    plt.xlabel('Numéro du voeu (N)')
+    plt.ylabel('Taux d\'assignation (%)')
     plt.ylim(60,103)
 
     return villes, postes_df, voeux_df, nb_postes, nb_auditeurs, top_30_demandes, top_30_voeux1, taux_assignation
