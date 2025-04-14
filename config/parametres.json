@@ -4,5 +4,5 @@
     "Noires ou rouges max": 6,
     "Vertes min": 0,
     "Methodes": ["linéaire", "carré", "exp"],
-    "Penalite": 1000000000
+    "Penalite": 1000000000000000
 }
