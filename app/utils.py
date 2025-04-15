@@ -316,8 +316,8 @@ def creer_matrice_couts(
 
     # Remplissage de la matrice :
     # pour chaque auditeur, on regarde les voeux dans l'ordre :
-    # pour chaque voeu, on met un nombre correspondant à l'ordre dans toutes les colonnes de la ville
-
+    # pour chaque voeu, on calcul le coût de l'affectation de l'auditeur à la ville
+    # on met le coût dans la matrice
     for ligne, row in repartition_df.iterrows():
         voeux_aud = row[1:].dropna().values
         for num_voeu in range(len(voeux_aud)):
