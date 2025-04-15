@@ -15,14 +15,14 @@ Cette application permet de :
 
 1. Clonez le dépôt :
 ```bash
-git clone [URL_DU_REPO]
+git clone https://github.com/L1ttleFinger/repartition_enm.git
 cd repartition_enm
 ```
 
 2. Créez un environnement virtuel et activez-le :
 ```bash
 python -m venv venv
-source venv/bin/activate  # Sur Windows : venv\Scripts\activate
+source venv/bin/activate  # Sur Windows : . venv\Scripts\activate
 ```
 
 3. Installez les dépendances :
