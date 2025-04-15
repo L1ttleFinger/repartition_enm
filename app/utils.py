@@ -310,7 +310,6 @@ def creer_matrice_couts(
     Returns:
         np.ndarray: Matrice de coûts de dimension (nb_auditeurs, nb_postes)
     """
-    # voeux_max = params_dict['Voeux max']
     penalite = params_dict["Penalite"]
     # lignes : nb_auditeurs ; colonnes : nb_postes
     matrice_couts = np.full((nb_auditeurs, nb_postes), penalite)
