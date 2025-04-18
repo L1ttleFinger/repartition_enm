@@ -97,9 +97,8 @@ else:
     # Chargement et affichage des données téléchargées
     postes_df = pd.read_csv(postes_file)
     voeux_df = pd.read_csv(voeux_file)
-    # Get all available v_ columns
+    # Restriction des voeux à la valeur de params_dict["Voeux"]
     available_v_columns = [col for col in voeux_df.columns if col.startswith("v_")]
-    # Take only the columns we need, up to the number of available columns
     needed_columns = ["id_auditeur"] + available_v_columns[: params_dict["Voeux"]]
     voeux_df = voeux_df[needed_columns]
 
