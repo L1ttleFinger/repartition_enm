@@ -57,7 +57,7 @@ streamlit run app/app.py
    - Chargez le fichier des postes (CSV)
    - Chargez le fichier des voeux (CSV)
    - Configurez les paramètres dans la barre latérale :
-     - Nombre de voeux
+     - Nombre de voeux sur lesquels lancer la répartition
      - Contraintes sur les villes noires/rouges/vertes
      - Méthode de calcul des coûts
      - Option "Voeux libres" pour relâcher les contraintes de couleurs
