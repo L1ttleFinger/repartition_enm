@@ -10,15 +10,22 @@ import streamlit as st
 import json
 import os
 import pandas as pd
+import sys
 from repartition import *
 
 # Path du fichier configuration
 CONFIG_PATH = "./config/"
 
+def resource_path(relative_path):
+    """Get absolute path to resource (handles PyInstaller bundle or dev)."""
+    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
+    return os.path.join(base_path, relative_path)
+
 st.title("Stage Juridictionnel")
 
 # Chargement et initialisation des paramètres depuis le fichier JSON
-with open(os.path.join(CONFIG_PATH, "parametres.json"), "r") as f:
+config_path = resource_path(os.path.join(CONFIG_PATH, "parametres.json"))
+with open(config_path, "r") as f:
     params_dict = json.load(f)
 # Extraction des paramètres
 num_voeux = params_dict["Voeux"]  # Nombre maximum de voeux par auditeur
