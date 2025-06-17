@@ -1,7 +1,9 @@
 name: Build Windows EXE for Streamlit App
 
 on:
-  workflow_dispatch:  # Trigger manually from GitHub Actions tab
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -32,3 +34,9 @@ jobs:
         with:
           name: repartition_stage_enm
           path: dist/app.exe
+      - name: Upload EXE to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/app.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
