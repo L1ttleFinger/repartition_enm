@@ -28,7 +28,7 @@ jobs:
           pyinstaller --onefile app/app.py
 
       - name: Upload EXE Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: streamlit-app
           path: dist/app.exe
