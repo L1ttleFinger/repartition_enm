@@ -14,7 +14,7 @@ import sys
 from repartition import *
 
 # Path du fichier configuration
-CONFIG_PATH = "./config/"
+CONFIG_PATH = "config"
 
 def resource_path(relative_path):
     """Get absolute path to resource (handles PyInstaller bundle or dev)."""
@@ -25,6 +25,8 @@ st.title("Stage Juridictionnel")
 
 # Chargement et initialisation des paramètres depuis le fichier JSON
 config_path = resource_path(os.path.join(CONFIG_PATH, "parametres.json"))
+if not os.path.exists(config_path):
+    raise FileNotFoundError(f"Configuration file not found at: {config_path}")
 with open(config_path, "r") as f:
     params_dict = json.load(f)
 # Extraction des paramètres
