@@ -30,16 +30,16 @@ jobs:
 
       - name: Build .exe with PyInstaller
         run: |
-          pyinstaller --onefile --copy-metadata streamlit --add-data "config\\parameters.json;config" app/app.py
+          pyinstaller --onefile --copy-metadata streamlit --add-data "config\\parameters.json;config" launcher.py
 
       - name: Upload EXE Artifact
         uses: actions/upload-artifact@v4
         with:
           name: repartition_stage_enm
-          path: dist/app.exe
+          path: dist/launcher.exe
       - name: Upload EXE to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/app.exe
+          files: dist/launcher.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
