@@ -24,7 +24,7 @@ def resource_path(relative_path):
 st.title("Stage Juridictionnel")
 
 # Chargement et initialisation des paramètres depuis le fichier JSON
-config_path = resource_path(os.path.join(CONFIG_PATH, "parametres.json"))
+config_path = resource_path(os.path.join(CONFIG_PATH, "parameters.json"))
 if not os.path.exists(config_path):
     raise FileNotFoundError(f"Configuration file not found at: {config_path}")
 with open(config_path, "r") as f:
