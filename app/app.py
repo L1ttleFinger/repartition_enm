@@ -27,7 +27,7 @@ st.title("Stage Juridictionnel")
 config_path = resource_path(os.path.join(CONFIG_PATH, "parameters.json"))
 if not os.path.exists(config_path):
     raise FileNotFoundError(f"Configuration file not found at: {config_path}")
-with open(config_path, "r") as f:
+with open(config_path, "r", encoding="utf-8") as f:
     params_dict = json.load(f)
 # Extraction des paramètres
 num_voeux = params_dict["Voeux"]  # Nombre maximum de voeux par auditeur
