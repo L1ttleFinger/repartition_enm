@@ -30,7 +30,7 @@ jobs:
 
       - name: Build .exe with PyInstaller
         run: |
-          pyinstaller --onefile --copy-metadata streamlit --add-data "config\\parameters.json;config" launcher.py
+          pyinstaller --onefile --copy-metadata streamlit --add-data "config\\parameters.json;config" --add-data "app;app" launcher.py
 
       - name: Upload EXE Artifact
         uses: actions/upload-artifact@v4
