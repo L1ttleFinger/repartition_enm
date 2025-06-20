@@ -98,15 +98,20 @@ jobs:
             --add-data "app:app" \
             repartition_enm.py --clean
 
+      - name: Zip macOS .app
+        run: |
+          cd dist
+          zip -r repartition_stage_enm_mac.zip repartition_stage_enm_mac.app
+
       - name: Upload APP Artifact
         uses: actions/upload-artifact@v4
         with:
           name: repartition_stage_enm_mac
-          path: dist/repartition_stage_enm_mac.app
+          path: dist/repartition_stage_enm_mac.zip
 
       - name: Upload APP to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/repartition_stage_enm_mac.app
+          files: dist/repartition_stage_enm_mac.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
