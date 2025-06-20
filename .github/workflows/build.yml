@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  build-windows:
     name: Build on Windows
     runs-on: windows-latest
 
@@ -38,7 +38,7 @@ jobs:
       - name: Build .exe with PyInstaller
         run: |
           pyinstaller --onefile `
-            --name repartition_stage_enm `
+            --name repartition_stage_enm_windows `
             --copy-metadata streamlit `
             --add-data "${{ env.STATIC_PATH }};streamlit/static" `
             --add-data "${{ env.RUNTIME_PATH }};streamlit/runtime" `
@@ -49,12 +49,62 @@ jobs:
       - name: Upload EXE Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: repartition_stage_enm
-          path: dist/repartition_stage_enm.exe
+          name: repartition_stage_enm_windows
+          path: dist/repartition_stage_enm_windows.exe
 
       - name: Upload EXE to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/repartition_stage_enm.exe
+          files: dist/repartition_stage_enm_windows.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-macos:
+    name: Build on macOS
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Find Streamlit static/runtime paths
+        id: streamlit-paths
+        run: |
+          STREAMLIT_PATH=$(python -c "import streamlit, os; print(os.path.dirname(streamlit.__file__))")
+          echo "STATIC_PATH=$STREAMLIT_PATH/static" >> $GITHUB_ENV
+          echo "RUNTIME_PATH=$STREAMLIT_PATH/runtime" >> $GITHUB_ENV
+
+      - name: Build .app with PyInstaller
+        run: |
+          pyinstaller --onefile `
+            --name repartition_stage_enm_mac `
+            --copy-metadata streamlit `
+            --add-data "$STATIC_PATH:streamlit/static" `
+            --add-data "$RUNTIME_PATH:streamlit/runtime" `
+            --add-data "config/parameters.json:config" `
+            --add-data "app:app" `
+            repartition_enm.py --clean
+
+      - name: Upload APP Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: repartition_stage_enm_mac
+          path: dist/repartition_stage_enm_mac
+
+      - name: Upload APP to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/repartition_stage_enm_mac
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
