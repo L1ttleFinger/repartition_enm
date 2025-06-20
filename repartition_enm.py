@@ -1,6 +1,6 @@
 import os
 import sys
-import subprocess
+# import subprocess
 import streamlit.web.cli as stcli
 import webbrowser
 import threading
@@ -24,14 +24,22 @@ if __name__ == "__main__":
     # threading.Thread(target=open_browser).start()
 
     print("Launching streamlit app")
-    subprocess.run([
-        sys.executable, "-m", "streamlit", "run", app_path,
-        # "--server.headless=true",
+    # subprocess.run([
+    #     sys.executable, "-m", "streamlit", "run", app_path,
+    #     # "--server.headless=true",
+    #     "--global.developmentMode=false",
+    #     # "--browser.gatherUsageStats=false",
+    #     # "--browser.serverAddress=localhost",
+    #     # "--server.runOnSave=false",
+    #     # "--browser.serverPort=8501"
+    #     # "--logger.level=error",
+    # ])
+    sys.argv = [
+        sys.executable, 
+        "-m",
+        "streamlit",
+        "run",
+        app_path,
         "--global.developmentMode=false",
-        # "--browser.gatherUsageStats=false",
-        # "--browser.serverAddress=localhost",
-        # "--server.runOnSave=false",
-        # "--browser.serverPort=8501"
-        # "--logger.level=error",
-    ])
+    ]
     sys.exit(stcli.main())
