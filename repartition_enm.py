@@ -25,9 +25,10 @@ if __name__ == "__main__":
     print("Launching streamlit app")
     subprocess.run([
         sys.executable, "-m", "streamlit", "run", app_path,
-        # "--server
+        "--server.headless=true",
         # "--browser.gatherUsageStats=false",
         # "--browser.serverAddress=localhost",
-        # "--server.runOnSave=false",
+        "--server.runOnSave=false",
         # "--browser.serverPort=8501"
+        "--logger.level=error",
     ])
