@@ -11,6 +11,7 @@ import json
 import os
 import pandas as pd
 import sys
+import subprocess
 from repartition import *
 
 # Path du fichier configuration
@@ -217,3 +218,18 @@ else:
         with resultats_tab:
             st.write("Affectations des auditeurs:")
             resultats = st.dataframe(res_voeux_df[["assignation", "voeu_realise"]])
+
+
+if __name__ == "__main__":
+
+    print("Launching streamlit app")
+    os.chdir(resource_path("app"))
+    subprocess.run([
+        sys.executable, "-m", "streamlit", "run", "app.py",
+        "--server.headless=true",
+        # "--browser.gatherUsageStats=false",
+        # "--browser.serverAddress=localhost",
+        "--server.runOnSave=false",
+        # "--browser.serverPort=8501"
+        "--logger.level=error",
+    ])

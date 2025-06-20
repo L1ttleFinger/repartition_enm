@@ -30,7 +30,7 @@ jobs:
 
       - name: Build .exe with PyInstaller
         run: |
-          pyinstaller --onefile --name repartition_stage_enm --copy-metadata streamlit --add-data "config\\parameters.json;config" --add-data "app;app" repartition_enm.py
+          pyinstaller --onefile --name repartition_stage_enm --copy-metadata streamlit --add-data "config\\parameters.json;config" app/app.py
 
       - name: Upload EXE Artifact
         uses: actions/upload-artifact@v4
