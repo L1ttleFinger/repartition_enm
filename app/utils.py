@@ -153,7 +153,7 @@ def verification_voeux(
     trop_de_voeux = 0
 
     # Création et/ou ouverture du fichier de log des voeux non valides
-    log_file = "./logs/voeux_non_valides.txt"
+    log_file = os.path.join(os.path.expanduser('~'), 'Documents', 'resultats_repartition_stage_juridictionnel/logs/voeux_non_valides.txt')
     os.makedirs(os.path.dirname(log_file), exist_ok=True)
     if os.path.exists(log_file):
         os.remove(log_file)

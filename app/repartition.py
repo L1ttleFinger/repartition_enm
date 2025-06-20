@@ -24,10 +24,8 @@ from villes import Ville
 from typing import Dict, Tuple, List, Any, Union
 
 seed = 42
-RESULTS_PATH = "./resultats/"
-if not os.path.exists(RESULTS_PATH):
-    os.makedirs(RESULTS_PATH)
-
+RESULTS_PATH = os.path.join(os.path.expanduser('~'), 'Documents', 'resultats_repartition_stage_juridictionnel')
+os.makedirs(RESULTS_PATH, exist_ok=True)
 
 def verification_et_analyse_des_voeux(
     postes_df: pd.DataFrame, voeux_df: pd.DataFrame, params_dict: Dict[str, Any]
