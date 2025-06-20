@@ -87,7 +87,9 @@ jobs:
 
       - name: Build .app with PyInstaller
         run: |
-          pyinstaller --onefile \
+          pyinstaller \
+            --noconfirm \
+            --windowed \
             --name repartition_stage_enm_mac \
             --copy-metadata streamlit \
             --add-data "$STATIC_PATH:streamlit/static" \
@@ -100,11 +102,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: repartition_stage_enm_mac
-          path: dist/repartition_stage_enm_mac
+          path: dist/repartition_stage_enm_mac.app
 
       - name: Upload APP to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/repartition_stage_enm_mac
+          files: dist/repartition_stage_enm_mac.app
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
