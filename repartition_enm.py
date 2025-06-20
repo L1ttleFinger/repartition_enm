@@ -23,8 +23,9 @@ if __name__ == "__main__":
     # threading.Thread(target=open_browser).start()
 
     print("Launching streamlit app")
+    os.chdir(resource_path("app"))
     subprocess.run([
-        sys.executable, "-m", "streamlit", "run", app_path,
+        "streamlit", "run", "app.py",
         "--server.headless=true",
         # "--browser.gatherUsageStats=false",
         # "--browser.serverAddress=localhost",
