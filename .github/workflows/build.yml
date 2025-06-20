@@ -27,10 +27,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pyinstaller
+      
+      - name: Find Streamlit static/runtime paths
+        id: streamlit-paths
+        run: |
+          $streamlitPath = python -c "import streamlit, os; print(os.path.dirname(streamlit.__file__))"
+          echo "STATIC_PATH=$streamlitPath\\static" >> $env:GITHUB_ENV
+          echo "RUNTIME_PATH=$streamlitPath\\runtime" >> $env:GITHUB_ENV
 
       - name: Build .exe with PyInstaller
         run: |
-          pyinstaller --onefile --name repartition_stage_enm --copy-metadata streamlit --add-data "enm_env\\lib\\python3.9\\site-packages\\streamlit\\runtime;streamlit\\runtime" --add-data "enm_env\\lib\\python3.9\\site-packages\\streamlit\\static;streamlit\\static" --add-data "config\\parameters.json;config" --add-data "app;app" repartition_enm.py --clean
+          pyinstaller --onefile `
+            --name repartition_stage_enm `
+            --copy-metadata streamlit `
+            --add-data "${{ env.STATIC_PATH }};streamlit/static" `
+            --add-data "${{ env.RUNTIME_PATH }};streamlit/runtime" `
+            --add-data "config\\parameters.json;config" `
+            --add-data "app;app" `
+            repartition_enm.py --clean
 
       - name: Upload EXE Artifact
         uses: actions/upload-artifact@v4
