@@ -35,8 +35,6 @@ if __name__ == "__main__":
     #     # "--logger.level=error",
     # ])
     sys.argv = [
-        sys.executable, 
-        "-m",
         "streamlit",
         "run",
         app_path,
