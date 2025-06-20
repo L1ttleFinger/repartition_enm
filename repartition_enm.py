@@ -25,7 +25,7 @@ if __name__ == "__main__":
     print("Launching streamlit app")
     os.chdir(resource_path("app"))
     subprocess.run([
-        "streamlit", "run", "app.py",
+        sys.executable, "-m", "streamlit", "run", "app.py",
         "--server.headless=true",
         # "--browser.gatherUsageStats=false",
         # "--browser.serverAddress=localhost",
