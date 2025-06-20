@@ -87,13 +87,13 @@ jobs:
 
       - name: Build .app with PyInstaller
         run: |
-          pyinstaller --onefile `
-            --name repartition_stage_enm_mac `
-            --copy-metadata streamlit `
-            --add-data "$STATIC_PATH:streamlit/static" `
-            --add-data "$RUNTIME_PATH:streamlit/runtime" `
-            --add-data "config/parameters.json:config" `
-            --add-data "app:app" `
+          pyinstaller --onefile \
+            --name repartition_stage_enm_mac \
+            --copy-metadata streamlit \
+            --add-data "$STATIC_PATH:streamlit/static" \
+            --add-data "$RUNTIME_PATH:streamlit/runtime" \
+            --add-data "config/parameters.json:config" \
+            --add-data "app:app" \
             repartition_enm.py --clean
 
       - name: Upload APP Artifact
