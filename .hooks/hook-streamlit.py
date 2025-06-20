@@ -1,3 +1,3 @@
 from PyInstaller.utils.hooks import collect_data_files
 
-datas = collect_data_files("streamlit")
+datas = collect_data_files("streamlit", include_py_files=True)
