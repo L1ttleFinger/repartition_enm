@@ -110,8 +110,8 @@ id_auditeur,v_1,v_2,v_3,...
 ```
 
 ## Résultats
-Les résultats de la répartition se trouverons dans vos Documents, dans un dossier nommé "resultats_repartition_stage_juridictionnel".
-En cas de voeux non valides, les raisons de non-validité se trouverons dans le fichier "resultats_repartition_stage_juridictionnel/logs/voeux_non_valides.txt"
+Les résultats de la répartition se trouveront dans vos Documents, dans un dossier nommé "resultats_repartition_stage_juridictionnel".
+En cas de voeux non valides, les raisons de non-validité se trouveront dans le fichier "resultats_repartition_stage_juridictionnel/logs/voeux_non_valides.txt"
 
 ## Auteurs
 
