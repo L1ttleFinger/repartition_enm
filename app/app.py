@@ -223,9 +223,9 @@ else:
 if __name__ == "__main__":
 
     print("Launching streamlit app")
-    os.chdir(resource_path("app"))
+    app_path = resource_path("app/app.py")
     subprocess.run([
-        sys.executable, "-m", "streamlit", "run", "app.py",
+        sys.executable, "-m", "streamlit", "run", app_path,
         "--server.headless=true",
         # "--browser.gatherUsageStats=false",
         # "--browser.serverAddress=localhost",
