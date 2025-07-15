@@ -62,7 +62,7 @@ with st.sidebar:
     voeux_libres = st.toggle("Voeux libres", value=False)
     # Widgets interactifs pour l'ajustement des paramètres
     params_dict["Voeux"] = st.number_input(
-        "Nombre de voeux", min_value=1, value=num_voeux, disabled=voeux_libres
+        "Nombre de voeux", min_value=1, value=num_voeux
     )
     params_dict["Noires max"] = st.number_input(
         "Nombre de villes noires maximum",

@@ -261,8 +261,13 @@ def executer_la_repartition(
 
     # Création du graphique en camembert des affectations
     proportions_voeux = plt.figure()
+    # Utilisation d'une palette de couleurs adaptée aux daltoniens (color-blind friendly)
+    colorblind_palette = ["#377eb8", "#ff7f00", "#4daf4a", "#f781bf", "#a65628", "#984ea3", "#999999", "#e41a1c", "#dede00"]
     proportions.plot.pie(
-        autopct="%1.1f%%", ylabel="", title=f"Méthode utilisée: {methode}"
+        autopct="%1.1f%%",
+        ylabel="",
+        title=f"Méthode utilisée: {methode}",
+        colors=colorblind_palette[:len(proportions)]
     )
 
     # Calcul des indicateurs de performance
